@@ -74,7 +74,7 @@
             content: "";
             position: absolute;
             inset: 0;
-            background-image: url('http://cursou.site/wp-content/uploads/2026/03/659bb249455400dd1b9c17e73f0c13dd.jpg');
+            background-image: url('chat-bg.jpg');
             background-size: cover;
             background-position: center;
             opacity: 0.8;
@@ -410,8 +410,8 @@
 
                     <!-- Player de Vídeo Principal Bloqueado -->
                     <div class="w-full aspect-video bg-gray-900 rounded-xl overflow-hidden relative shadow-lg locked-item group">
-                        <!-- Thumbnail borrada -->
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_72_FOTOS-PICOLE-LAISE-1121-scaled-1.webp" class="w-full h-full object-cover opacity-70 blur-[3px] scale-105" alt="Aula Picolé">
+                        <!-- Thumbnail borrada agora usando arquivo local -->
+                        <img src="picole-grid-1.webp" class="w-full h-full object-cover opacity-70 blur-[3px] scale-105" alt="Aula Picolé">
                         
                         <!-- Botão Play Falso Atrás do Vidro -->
                         <div class="absolute inset-0 flex items-center justify-center">
@@ -461,7 +461,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <!-- Aula 2 -->
                         <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_73_FOTOS-PICOLE-LAISE-1160-scaled-1.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
+                            <img src="picole-grid-2.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
                             <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
                                 <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
                                     <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
@@ -471,7 +471,7 @@
                         </div>
                         <!-- Aula 3 -->
                         <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_70_FOTOS-PICOLE-LAISE-941-scaled-1.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
+                            <img src="picole-grid-3.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
                             <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
                                 <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
                                     <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
@@ -481,7 +481,7 @@
                         </div>
                         <!-- Aula 4 -->
                         <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_71_FOTOS-PICOLE-LAISE-1006-scaled-1.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
+                            <img src="picole-grid-4.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
                             <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
                                 <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
                                     <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
@@ -491,7 +491,7 @@
                         </div>
                         <!-- Aula 5 -->
                         <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_68_FOTOS-PICOLE-LAISE-875-scaled-1.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
+                            <img src="picole-grid-5.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
                             <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
                                 <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
                                     <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
@@ -556,7 +556,7 @@
 
             <!-- Botão Fixo Embaixo para Voltar ao Chat -->
             <div class="absolute bottom-0 inset-x-0 p-4 bg-white border-t border-gray-100 z-20">
-                <button id="btn-close-modal" class="w-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-black py-4 rounded-xl shadow-[0_4px_14px_0_rgba(37,211,102,0.39)] flex justify-center items-center gap-2 transition-transform active:scale-95 text-[15px]">
+                <button id="btn-close-modal" class="w-full bg-[#00a884] hover:bg-[#008f6f] text-white font-black py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,168,132,0.39)] flex justify-center items-center gap-2 transition-transform active:scale-95 text-[15px]">
                     <i class="ph-bold ph-whatsapp text-xl"></i> VOLTAR PARA O WHATSAPP
                 </button>
             </div>
@@ -568,7 +568,7 @@
     <header class="bg-wa-header h-[60px] px-3 flex items-center justify-between shrink-0 z-20">
         <div class="flex items-center gap-3 cursor-pointer">
             <i class="ph-bold ph-arrow-left text-xl text-wa-text"></i>
-            <img src="http://cursou.site/wp-content/uploads/2026/01/sorvetedobra3-1.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+            <img src="picole-hero.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
             <div class="flex flex-col justify-center">
                 <div class="flex items-center gap-1 leading-tight">
                     <span class="font-semibold text-wa-text text-[16px]">Mari Confeiteira</span>
@@ -695,14 +695,14 @@
             <!-- O GRID DE IMAGENS -->
             <div class="flow-item w-full mt-1" data-sender="bot" data-is-file="true">
                 <div class="bg-wa-msgIn p-1 bubble bubble-in w-full max-w-[300px] relative pb-5 shadow-sm">
-                    <!-- Grid estilo Álbum -->
+                    <!-- Grid estilo Álbum com imagens locais -->
                     <div class="grid grid-cols-2 gap-[2px] w-full rounded-lg overflow-hidden bg-black/20">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_72_FOTOS-PICOLE-LAISE-1121-scaled-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_73_FOTOS-PICOLE-LAISE-1160-scaled-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_70_FOTOS-PICOLE-LAISE-941-scaled-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_71_FOTOS-PICOLE-LAISE-1006-scaled-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_68_FOTOS-PICOLE-LAISE-875-scaled-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="http://cursou.site/wp-content/uploads/2026/03/imgi_64_FOTOS-PICOLE-LAISE-1006-scaled-1.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-1.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-2.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-3.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-4.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-5.webp" class="grid-img w-full h-28 object-cover">
+                        <img src="picole-grid-6.webp" class="grid-img w-full h-28 object-cover">
                     </div>
                     <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
                 </div>
