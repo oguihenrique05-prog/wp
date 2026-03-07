@@ -175,6 +175,26 @@
         return sid;
       }
 
+      function getQueryParam(name) {
+        try {
+          return new URL(location.href).searchParams.get(name);
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function ensureFbc() {
+        var existing = getCookie("_fbc");
+        if (existing) return existing;
+
+        var fbclid = getQueryParam("fbclid");
+        if (!fbclid) return null;
+
+        var fbc = "fb.1." + Date.now() + "." + fbclid;
+        setCookie("_fbc", fbc, 90);
+        return fbc;
+      }
+
       function safeResolveUrl(href) {
         var resolved = href;
         try { resolved = new URL(href, location.href).href; } catch (e) {}
@@ -259,7 +279,7 @@
           url: location.href,
           utm: buildUtms(),
           fbp: getCookie("_fbp"),
-          fbc: getCookie("_fbc")
+          fbc: ensureFbc()
         };
 
         sendEvent(payload);
