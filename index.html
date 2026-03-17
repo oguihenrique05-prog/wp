@@ -45,21 +45,22 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
         
-        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; overscroll-behavior-y: none; }
+        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; overscroll-behavior-y: none; background-color: #0b141a; }
         
         .bg-chat-pattern {
-            background-color: #0b141a;
             position: relative;
         }
         .bg-chat-pattern::before {
             content: "";
-            position: absolute;
-            inset: 0;
-            /* CDN Direta do Padrão WhatsApp Doodles Transparente */
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
-            background-size: 400px;
-            background-repeat: repeat;
-            opacity: 0.06; /* Opacidade sutil idêntica ao app nativo no dark mode */
+            position: fixed; 
+            top: 60px; 
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('fundo.webp'); 
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; 
             z-index: 0;
             pointer-events: none;
         }
@@ -160,8 +161,9 @@
         </div>
     </footer>
 
-    <!-- SEU ÁUDIO (Coloque o arquivo MP3 aqui com o nome exato) -->
+    <!-- SONS -->
     <audio id="vsl-audio" src="SEU-AUDIO-AQUI.mp3" preload="auto"></audio>
+    <audio id="click-sound" src="efeito.mp3" preload="auto"></audio>
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
@@ -172,8 +174,17 @@
             const footerReal = document.getElementById("footer-real");
             const nameInput = document.getElementById("user-name-input");
             const btnSendName = document.getElementById("btn-send-name");
+            const clickSound = document.getElementById("click-sound");
 
             let userData = { name: "Amiga", city: "sua cidade" };
+
+            // Função para tocar o efeito sonoro de clique
+            const playClickSound = () => {
+                if (clickSound) {
+                    clickSound.currentTime = 0; // Reinicia para permitir cliques rápidos
+                    clickSound.play().catch(e => console.log("Erro som:", e));
+                }
+            };
 
             // Geolocalização Silenciosa
             fetch('https://ipapi.co/json/')
@@ -245,6 +256,7 @@
                     btn.innerHTML = `<span>${opt.text}</span>`;
                     
                     btn.addEventListener("click", () => {
+                        playClickSound(); // Feedback sonoro no clique do botão
                         document.getElementById(containerId).remove();
                         addUserMessage(opt.text);
                         opt.action();
@@ -257,15 +269,11 @@
                 scrollToBottom();
             };
 
-            // ==========================================
-            // FLUXO DO FUNIL - MULHER PARA MULHER (PT-BR)
-            // ==========================================
-
             const runPhase1 = async () => {
-                await addBotMessage("Amiga, descobri uma verdadeira mina de ouro pra faturar alto sem sair da cozinha. 🍦", 1200);
-                await addBotMessage("Se você tem um congelador comum em casa, eu vou te provar como é possível lucrar até <b>R$ 3.240 por mês</b> vendendo Picolé Trufado Artesanal.", 3500);
-                await addBotMessage("Mas deixa eu te contar um segredo... tem donas de casa e confeiteiras fazendo MUITO MAIS QUE ISSO todos os meses! 🚨", 4000);
-                await addBotMessage("Mas me conta uma coisa... Qual é o seu <b>PRINCIPAL OBJETIVO</b> hoje?", 2500);
+                await addBotMessage("Amiga, descobri uma verdadeira mina de ouro pra faturar alto sem sair da cozinha. 🍦", 2500);
+                await addBotMessage("Se você tem um congelador comum em casa, eu vou te provar como é possível lucrar até <b>R$ 3.240 por mês</b> vendendo Picolé Trufado Artesanal.", 5000);
+                await addBotMessage("Mas deixa eu te contar um segredo... tem donas de casa e confeiteiras fazendo MUITO MAIS QUE ISSO todos os meses! 🚨", 5500);
+                await addBotMessage("Mas me conta uma coisa... Qual é o seu <b>PRINCIPAL OBJETIVO</b> hoje?", 3500);
 
                 showInlineButtons([
                     { text: "Fazer meus primeiros R$ 300! 🔥", action: () => runPhase2() },
@@ -275,8 +283,8 @@
             };
 
             const runPhase2 = async () => {
-                await addBotMessage("Que maravilha! 🥰 Mas deixa eu te fazer uma perguntinha...", 2000);
-                await addBotMessage("Pra eu te mostrar o caminho certinho e não te passar informação à toa... Qual o seu nível de experiência com doces?", 3500);
+                await addBotMessage("Que maravilha! 🥰 Mas deixa eu te fazer uma perguntinha...", 3500);
+                await addBotMessage("Pra eu te mostrar o caminho certinho e não te passar informação à toa... Qual o seu nível de experiência com doces?", 5000);
                 
                 showInlineButtons([
                     { text: "Já faço e vendo 🏆", action: () => runPhase3() },
@@ -285,17 +293,13 @@
             };
 
             const runPhase3 = async () => {
-                await addBotMessage("Perfeita! Vamos <b>DESTRAVAR</b> sua cozinha pra que você tenha lucro de verdade todos os dias.", 3000);
-                await addBotMessage("E antes de te mostrar como fazer sua primeira <b>produção</b> em MENOS DE 24 HORAS, ouve esse áudio rapidinho:", 3500);
+                await addBotMessage("Perfeita! Vamos <b>DESTRAVAR</b> sua cozinha pra que você tenha lucro de verdade todos os dias.", 4500);
+                await addBotMessage("E antes de te mostrar como fazer sua primeira <b>produção</b> em MENOS DE 24 HORAS, ouve esse áudio rapidinho:", 5000);
                 
                 renderAudioPlayer();
-                
-                // 🛑 A ESTRATÉGIA DO SILÊNCIO TÁTICO 🛑
-                // O bot não fala nada por exatos 30 segundos (novo tempo do seu áudio).
-                // Isso cria o Bloqueio Psicológico. A lead sente que a Mari está esperando ela ouvir.
                 await sleep(30000);
                 
-                await addBotMessage("Posso te mandar umas fotos mostrando na prática a lindeza que eles ficam?", 3000);
+                await addBotMessage("Posso te mandar umas fotos mostrando na prática a lindeza que eles ficam?", 4000);
 
                 showInlineButtons([
                     { text: "Nossa, sim, por favor! 🔥", action: () => runPhase4() }
@@ -304,10 +308,9 @@
 
             const runPhase4 = async () => {
                 setTyping(true);
-                await sleep(2500);
+                await sleep(3500);
                 setTyping(false);
 
-                // Grid idêntico ao Template 1 (Landing Page), com gap-3, cantos bem arredondados (2xl) e imagens grandes
                 const gridHtml = `
                     <div class="grid grid-cols-2 gap-3 w-full max-w-[340px]">
                         <img src="picole-grid-1.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
@@ -320,7 +323,6 @@
                 
                 const div = document.createElement("div");
                 div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
-                // Injetado SEM o fundo do balão de mensagem para a galeria brilhar e impactar visualmente
                 div.innerHTML = `
                     <div class="relative max-w-[90%] sm:max-w-[85%]">
                         ${gridHtml}
@@ -330,8 +332,8 @@
                 chatCanvas.insertBefore(div, typingIndicator);
                 scrollToBottom();
 
-                await addBotMessage("Esses são os picolés com casquinha de chocolate fininha e recheio trufado... eles vendem sozinhos de tão lindos! 🤤", 3500);
-                await addBotMessage("Pra eu te explicar como você vai fazer essa maravilha aí na sua casa, como posso te chamar? (Digita seu nome abaixo) 👇", 3000);
+                await addBotMessage("Esses são os picolés com casquinha de chocolate fininha e recheio trufado... eles vendem sozinhos de tão lindos! 🤤", 5500);
+                await addBotMessage("Pra eu te explicar como você vai fazer essa maravilha aí na sua casa, como posso te chamar? (Digita seu nome abaixo) 👇", 4500);
                 
                 footerFake.classList.add('hidden');
                 footerReal.classList.remove('hidden');
@@ -342,6 +344,7 @@
                 const name = nameInput.value.trim();
                 if(name.length < 2) return;
                 
+                playClickSound(); // Feedback sonoro ao enviar o nome
                 userData.name = name;
                 footerReal.classList.add('hidden');
                 footerFake.classList.remove('hidden');
@@ -352,10 +355,10 @@
             nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') submitName(); });
 
             const runPhase6 = async () => {
-                await addBotMessage(`<b>${userData.name}</b>, muito prazer! ❤️`, 2000);
-                await addBotMessage("Me dá só um segundinho, vou dar uma pesquisada rápida aqui no Google pra ver como tão as vendas de picolés artesanais aí na sua região... 🔍", 4000);
+                await addBotMessage(`<b>${userData.name}</b>, muito prazer! ❤️`, 3000);
+                await addBotMessage("Me dá só um segundinho, vou dar uma pesquisada rápida aqui no Google pra ver como tão as vendas de picolés artesanais aí na sua região... 🔍", 6000);
 
-                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Pesquisando no Google...</div>", 2000);
+                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Pesquisando no Google...</div>", 2500);
                 
                 await sleep(3500); 
                 const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
@@ -363,11 +366,11 @@
                     spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Busca Concluída!</div>`;
                 }
                 
-                await addBotMessage(`Menina, olha que oportunidade! Na região de <b>${userData.city}</b> eu não encontrei quase ninguém vendendo esses picolés gourmet ainda! 😱`, 3500);
-                await addBotMessage("Isso significa que você vai ser uma das primeiras e vai poder aproveitar o mercado livre pra lucrar muito aí! 💸", 3500);
-                await addBotMessage("Mas pra dar certo, você precisa de um pouquinho de dedicação...", 2500);
-                await addBotMessage("Você consegue tirar pelo menos <b>2 horinhas livres</b> uma vez por semana pra produção?", 2500);
-                await addBotMessage("Pode ser dividido em 2 ou 3 dias também, super tranquilo...", 2000);
+                await addBotMessage(`Menina, olha que oportunidade! Na região de <b>${userData.city}</b> eu não encontrei quase ninguém vendendo esses picolés gourmet ainda! 😱`, 5500);
+                await addBotMessage("Isso significa que você vai ser uma das primeiras e vai poder aproveitar o mercado livre pra lucrar muito aí! 💸", 5500);
+                await addBotMessage("Mas pra dar certo, você precisa de um pouquinho de dedicação...", 4000);
+                await addBotMessage("Você consegue tirar pelo menos <b>2 horinhas livres</b> uma vez por semana pra produção?", 4000);
+                await addBotMessage("Pode ser dividido em 2 ou 3 dias também, super tranquilo...", 3500);
 
                 showInlineButtons([
                     { text: "Consigo sim, com certeza! 😄", action: () => runPhase7() },
@@ -376,9 +379,9 @@
             };
 
             const runPhase7 = async () => {
-                await addBotMessage(`Ótimo! Então, <b>${userData.name}</b>, vou só dar uma olhadinha no seu perfil com base no que a gente conversou pra ver se posso liberar seu acesso agora. Rapidinho...`, 3500);
+                await addBotMessage(`Ótimo! Então, <b>${userData.name}</b>, vou só dar uma olhadinha no seu perfil com base no que a gente conversou pra ver se posso liberar seu acesso agora. Rapidinho...`, 5000);
                 
-                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2 text-wa-sysText font-semibold'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Analisando o perfil...</div>", 2000);
+                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2 text-wa-sysText font-semibold'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Analisando o perfil...</div>", 2500);
                 
                 await sleep(4000);
                 const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
@@ -386,12 +389,10 @@
                     spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Acesso LIBERADO</div>`;
                 }
                 
-                await addBotMessage("ACESSO LIBERADO COM SUCESSO! 🎉", 2000);
-                
-                await addBotMessage(`Então é isso TUDO que você vai receber hoje: 👇<br><br>✅ <b>Vídeo Aulas em Alta Resolução</b> (Passo a passo prático)<br>✅ O Segredo do <b>Recheio Trufado</b> e Casquinha Crocante<br>✅ Cardápio Enxuto: <b>15 Sabores Campeões</b> de Venda<br>✅ Técnica de Armazenamento pra não perder estoque<br>✅ Roteiro de Vendas: Como esgotar seu estoque em 24h<br>✅ Acesso Vitalício + <b>Suporte VIP</b> direto comigo<br>✅ Lindo <b>Certificado de Conclusão Oficial</b><br><br>E mais os <b>3 BÔNUS:</b><br>🎁 Bônus 1: Pack Canva de Artes Prontas<br>🎁 Bônus 2: Script de Vendas p/ WhatsApp<br>🎁 Bônus 3: Calculadora Automática de Lucro`, 5000);
-                
-                await addBotMessage("Eu e milhares de alunas somos iguais a você, começamos do zero. É só seguir o passo a passo e o método.", 3500);
-                await addBotMessage(`<b>${userData.name}</b>, preparada pra dar esse passo?`, 2500);
+                await addBotMessage("ACESSO LIBERADO COM SUCESSO! 🎉", 3000);
+                await addBotMessage(`Então é isso TUDO que você vai receber hoje: 👇<br><br>✅ <b>Vídeo Aulas em Alta Resolução</b> (Passo a passo prático)<br>✅ O Segredo do <b>Recheio Trufado</b> e Casquinha Crocante<br>✅ Cardápio Enxuto: <b>15 Sabores Campeões</b> de Venda<br>✅ Técnica de Armazenamento pra não perder estoque<br>✅ Roteiro de Vendas: Como esgotar seu estoque em 24h<br>✅ Acesso Vitalício + <b>Suporte VIP</b> direto comigo<br>✅ Lindo <b>Certificado de Conclusão Oficial</b><br><br>E mais os <b>3 BÔNUS:</b><br>🎁 Bônus 1: Pack Canva de Artes Prontas<br>🎁 Bônus 2: Script de Vendas p/ WhatsApp<br>🎁 Bônus 3: Calculadora Automática de Lucro`, 7500);
+                await addBotMessage("Eu e milhares de alunas somos iguais a você, começamos do zero. É só seguir o passo a passo e o método.", 5000);
+                await addBotMessage(`<b>${userData.name}</b>, preparada pra dar esse passo?`, 3500);
 
                 showInlineButtons([
                     { text: "100% pronta! Quero começar! 🔥", action: () => runPhase8() },
@@ -400,19 +401,15 @@
             };
 
             const runPhase8 = async () => {
-                await addBotMessage("Eu poderia cobrar facilmente R$ 197,00 pelo Treinamento com todas as aulas...", 3000);
-                await addBotMessage(`Com os <b>3 BÔNUS PRONTOS</b> e todo o material que eu preparei <b>especialmente</b> pra você, ${userData.name}.`, 3500);
-                await addBotMessage("Mas isso seria completamente injusto e eu quero realmente te ajudar...", 2500);
-                await addBotMessage("Também poderia ser GRÁTIS, mas você não daria valor e eu teria perdido meu tempo.", 3500);
-                await addBotMessage("Então, apenas <b>AGORA</b>, vou te dar a CHANCE de ganhar um PRÊMIO NA RASPADINHA 🔥", 3500);
-                await addBotMessage("RASPOU, GANHOU. Simples assim...", 2000);
+                await addBotMessage("Eu poderia cobrar facilmente R$ 197,00 pelo Treinamento com todas as aulas...", 4500);
+                await addBotMessage(`Com os <b>3 BÔNUS PRONTOS</b> e todo o material que eu preparei <b>especialmente</b> pra você, ${userData.name}.`, 5000);
+                await addBotMessage("Mas isso seria completamente injusto e eu quero realmente te ajudar...", 4000);
+                await addBotMessage("Também poderia ser GRÁTIS, mas você não daria valor e eu teria perdido meu tempo.", 5000);
+                await addBotMessage("Então, apenas <b>AGORA</b>, vou te dar a CHANCE de ganhar um PRÊMIO NA RASPADINHA 🔥", 5000);
+                await addBotMessage("RASPOU, GANHOU. Simples assim...", 3500);
                 
                 renderScratchCard();
             };
-
-            // ==========================================
-            // COMPONENTES VISUAIS (Áudio e Raspadinha)
-            // ==========================================
 
             const renderAudioPlayer = () => {
                 const div = document.createElement("div");
@@ -448,7 +445,7 @@
                 audioEl.load();
 
                 playBtn.addEventListener("click", () => {
-                    // Efeito do WhatsApp: Microfone fica azul quando tocado
+                    playClickSound(); // Feedback sonoro ao dar o play
                     micIcon.classList.remove("text-[#00a884]");
                     micIcon.classList.add("text-[#53bdeb]");
 
@@ -493,7 +490,6 @@
                 
                 chatCanvas.insertBefore(div, typingIndicator);
                 scrollToBottom();
-
                 initScratchLogic();
             };
 
@@ -505,26 +501,19 @@
 
                 canvas.width = canvas.offsetWidth;
                 canvas.height = canvas.offsetHeight;
-
                 ctx.fillStyle = "#fbbf24"; 
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
                 ctx.font = "900 18px Arial";
                 ctx.fillStyle = "#78350f"; 
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText("RASPE E GANHE NA HORA!", canvas.width / 2, canvas.height / 2);
-
                 ctx.globalCompositeOperation = "destination-out";
 
                 const getMousePos = (canvas, evt) => {
                     const rect = canvas.getBoundingClientRect();
-                    let clientX = evt.clientX;
-                    let clientY = evt.clientY;
-                    if(evt.touches && evt.touches.length > 0) {
-                        clientX = evt.touches[0].clientX;
-                        clientY = evt.touches[0].clientY;
-                    }
+                    let clientX = evt.clientX || (evt.touches && evt.touches[0].clientX);
+                    let clientY = evt.clientY || (evt.touches && evt.touches[0].clientY);
                     return {
                         x: (clientX - rect.left) * (canvas.width / rect.width),
                         y: (clientY - rect.top) * (canvas.height / rect.height)
@@ -535,19 +524,15 @@
                     if (!isDrawing || isCleared) return;
                     e.preventDefault(); 
                     const pos = getMousePos(canvas, e);
-                    
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2, false);
                     ctx.fill();
-                    
                     checkClearPercentage();
                 };
 
                 canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
                 canvas.addEventListener('mousemove', scratch);
                 canvas.addEventListener('mouseup', () => { isDrawing = false; });
-                canvas.addEventListener('mouseleave', () => { isDrawing = false; });
-                
                 canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
                 canvas.addEventListener('touchmove', scratch, {passive: false});
                 canvas.addEventListener('touchend', () => { isDrawing = false; });
@@ -556,9 +541,7 @@
                     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
                     let transparentPixels = 0;
                     for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] === 0) transparentPixels++; }
-                    
                     const clearPercentage = (transparentPixels / (pixels.length / 4)) * 100;
-                    
                     if (clearPercentage > 45 && !isCleared) {
                         isCleared = true;
                         canvas.style.transition = "opacity 0.5s ease";
@@ -572,10 +555,10 @@
             };
 
             const showFinalPitch = async () => {
-                await addBotMessage(`<b>CARACA ${userData.name}</b>, tirou o DESCONTO MÁXIMO, já começou bem ein... 🔥`, 2500);
-                await addBotMessage("Então você não vai pagar os R$ 197,00 que falei pra você... com o desconto você vai pagar:", 3000);
-                await addBotMessage("<b>APENAS R$ 37,00 À VISTA</b> 🔥", 2000);
-                await addBotMessage(`A escolha agora é sua, <b>${userData.name}</b> ! 🔥`, 2000);
+                await addBotMessage(`<b>CARACA ${userData.name}</b>, tirou o DESCONTO MÁXIMO, já começou bem ein... 🔥`, 4000);
+                await addBotMessage("Então você não vai pagar os R$ 197,00 que falei pra você... com o desconto você vai pagar:", 4500);
+                await addBotMessage("<b>APENAS R$ 37,00 À VISTA</b> 🔥", 3500);
+                await addBotMessage(`A escolha agora é sua, <b>${userData.name}</b> ! 🔥`, 3500);
 
                 const finalLinks = document.createElement("div");
                 finalLinks.className = "w-full animate-pop-in mt-2 mb-8 flex flex-col gap-2 justify-end items-end pr-1";
@@ -588,7 +571,6 @@
                 scrollToBottom();
             };
 
-            // INICIAR O FUNIL
             runPhase1();
         });
     </script>
