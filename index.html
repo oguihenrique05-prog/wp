@@ -23,21 +23,18 @@
                             textMuted: '#8696a0',
                             sysBg: '#182229',
                             sysText: '#8696a0',
-                            btnGreen: '#00a884',
-                            lpRed: '#e11d48'
+                            btnGreen: '#00a884'
                         }
                     },
                     keyframes: {
                         blink: { '0%, 100%': { opacity: '0.4' }, '50%': { opacity: '1' } },
                         popIn: { '0%': { transform: 'scale(0.95)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
-                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
-                        pulseGlow: { '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(37, 211, 102, 0.4)' }, '50%': { transform: 'scale(1.05)', boxShadow: '0 0 20px 10px rgba(37, 211, 102, 0)' } }
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     },
                     animation: {
                         'typing-dot': 'blink 1.4s infinite both',
                         'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
-                        'slide-up': 'slideUp 0.4s ease-out forwards',
-                        'pulse-glow': 'pulseGlow 2s infinite'
+                        'slide-up': 'slideUp 0.4s ease-out forwards'
                     }
                 }
             }
@@ -48,161 +45,129 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
         
-        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; overscroll-behavior-y: none; background-color: #fdf2f8; }
+        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; overscroll-behavior-y: none; background-color: #0b141a; }
         
-        /* Estilo do Fundo do Chat (Apenas quando o chat abrir) */
-        .bg-chat-pattern { position: relative; }
+        /* Fundo Estático Estilo WhatsApp */
+        .bg-chat-pattern {
+            position: relative;
+        }
         .bg-chat-pattern::before {
             content: "";
-            position: fixed; top: 60px; left: 0; right: 0; bottom: 0;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
-            background-size: 400px; background-repeat: repeat; opacity: 0.06; z-index: 0; pointer-events: none;
+            position: fixed; 
+            top: 60px; 
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('fundo.webp'); 
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; 
+            z-index: 0;
+            pointer-events: none;
         }
 
         #chat-canvas { position: relative; z-index: 10; }
+        
         .bubble { border-radius: 10px; box-shadow: 0 1px 0.5px rgba(11,20,26,.13); }
         .bubble-in { border-top-left-radius: 0; }
         .bubble-out { border-top-right-radius: 0; }
 
         .inline-btn {
-            background-color: #005c4b; color: #e9edef; border-radius: 10px; border-top-right-radius: 0; 
-            padding: 10px 14px; font-size: 15px; cursor: pointer; box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
-            display: flex; align-items: center; justify-content: space-between; transition: transform 0.1s, opacity 0.1s;
+            background-color: #005c4b; 
+            color: #e9edef;
+            border-radius: 10px;
+            border-top-right-radius: 0; 
+            padding: 10px 14px;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.1s, opacity 0.1s;
         }
         .inline-btn:active { transform: scale(0.98); opacity: 0.9; }
         
         .scratch-container { position: relative; width: 100%; max-width: 320px; height: 160px; margin: 0 auto; user-select: none; }
         .scratch-base { position: absolute; inset: 0; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #00a884, #005c4b); color: white; text-align: center; padding: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
         #scratch-canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; cursor: pointer; z-index: 20; touch-action: none; }
-
-        /* Landing Page Otimizada */
-        #landing-page { 
-            position: fixed; 
-            inset: 0; 
-            background: radial-gradient(circle at center, #ffffff 0%, #fce7f3 100%); 
-            z-index: 300; 
-            overflow-y: auto; 
-            color: #1e293b;
-        }
-        .lp-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 30px 20px; text-align: center; }
-        .lp-image-container { width: 100%; margin: 20px 0; display: flex; justify-content: center; }
-        .lp-main-image { width: 100%; max-width: 400px; height: auto; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
     </style>
 </head>
 
 <body class="bg-wa-bg text-wa-text h-[100dvh] flex flex-col overflow-hidden select-none relative w-full mx-auto">
 
-    <!-- LANDING PAGE (PÁGINA 1) -->
-    <div id="landing-page">
-        <div class="lp-container">
-            <p class="text-wa-lpRed font-bold text-[10px] tracking-[0.2em] uppercase mb-1">
-                APRENDA, VENDA E LUCRE:
-            </p>
-            <h1 class="text-[#1e293b] text-4xl font-black italic tracking-tighter mb-4">
-                Picolé Artesanal
-            </h1>
-            
-            <h2 class="text-[#1e293b] text-lg font-extrabold leading-tight mb-2">
-                O Plano de Lucro do Verão com<br>
-                <span class="text-wa-lpRed uppercase">COBERTURA CROCANTE</span> e<br>
-                <span class="text-wa-lpRed italic uppercase">RECHEIO TRUFADO</span>
-            </h2>
-            
-            <p class="text-gray-500 text-[11px] mb-6">
-                feito na sua cozinha, <span class="underline font-semibold">sem máquina cara</span><br>e sem complicação!
-            </p>
-
-            <!-- SUA IMAGEM ÚNICA (lp-picole.webp) -->
-            <div class="lp-image-container">
-                <img src="lp-picole.webp" alt="Destaque Picolé Lucrativo" class="lp-main-image">
+    <!-- HEADER DO WHATSAPP -->
+    <header class="bg-wa-header h-[60px] px-3 flex items-center justify-between shrink-0 z-20 w-full shadow-sm">
+        <div class="flex items-center gap-3 cursor-pointer max-w-3xl mx-auto w-full">
+            <div class="flex items-center gap-3 flex-1">
+                <i class="ph-bold ph-arrow-left text-xl text-wa-text"></i>
+                <img src="picole-hero.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                <div class="flex flex-col justify-center">
+                    <div class="flex items-center gap-1 leading-tight">
+                        <span class="font-semibold text-wa-text text-[16px]">Mari Confeiteira</span>
+                        <i class="ph-fill ph-seal-check text-[#53bdeb] text-[15px]"></i>
+                    </div>
+                    <span id="header-status" class="text-[13px] text-wa-textMuted leading-tight transition-colors">online</span>
+                </div>
             </div>
-
-            <p class="text-[#1e293b] text-sm font-bold leading-snug mb-8">
-                Venda <span class="text-wa-lpRed">todo dia</span> no iFood com um<br>
-                cardápio direto ao ponto:<br>
-                <span class="text-base font-black uppercase">15 Sabores Campeões de Vendas!</span>
-            </p>
-
-            <!-- BOTÃO GATILHO DIRETO -->
-            <button id="btn-start-lp" class="w-full bg-[#10b981] hover:bg-[#059669] text-white font-black py-4 rounded-xl text-lg shadow-[0_8px_25px_rgba(16,185,129,0.4)] transition-all active:scale-95 animate-pulse-glow">
-                QUERO COMEÇAR AGORA
-            </button>
+            <div class="flex items-center gap-6 text-wa-text text-xl pr-2 shrink-0">
+                <i class="ph ph-video-camera cursor-pointer hidden sm:block"></i>
+                <i class="ph ph-phone cursor-pointer"></i>
+                <i class="ph ph-dots-three-vertical cursor-pointer"></i>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- CHAT (PÁGINA 2 - OCULTA INICIALMENTE) -->
-    <div id="main-chat" class="hidden h-full flex flex-col w-full">
-        <header class="bg-wa-header h-[60px] px-3 flex items-center justify-between shrink-0 z-20 w-full shadow-sm">
-            <div class="flex items-center gap-3 cursor-pointer max-w-3xl mx-auto w-full">
-                <div class="flex items-center gap-3 flex-1">
-                    <i class="ph-bold ph-arrow-left text-xl text-wa-text"></i>
-                    <img src="picole-hero.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
-                    <div class="flex flex-col justify-center">
-                        <div class="flex items-center gap-1 leading-tight">
-                            <span class="font-semibold text-wa-text text-[16px]">Mari Confeiteira</span>
-                            <i class="ph-fill ph-seal-check text-[#53bdeb] text-[15px]"></i>
-                        </div>
-                        <span id="header-status" class="text-[13px] text-wa-textMuted leading-tight transition-colors">online</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-6 text-wa-text text-xl pr-2 shrink-0 font-bold">
-                    <i class="ph ph-video-camera cursor-pointer hidden sm:block"></i>
-                    <i class="ph ph-phone cursor-pointer"></i>
-                    <i class="ph ph-dots-three-vertical cursor-pointer"></i>
+    <!-- CHAT CONTAINER DINÂMICO -->
+    <main id="chat-container" class="flex-1 relative overflow-y-auto w-full bg-chat-pattern scroll-smooth">
+        <div class="max-w-[700px] mx-auto px-3 py-3 flex flex-col gap-1.5 pb-24 relative" id="chat-canvas">
+            <div class="flex justify-center my-2 animate-fade">
+                <div class="bg-wa-sysBg text-wa-sysText text-[12px] px-3 py-1.5 rounded-[10px] flex items-center gap-2 max-w-[90%] text-center">
+                    <i class="ph-fill ph-lock-key text-wa-textMuted"></i> As mensagens são protegidas com a criptografia de ponta a ponta.
                 </div>
             </div>
-        </header>
-
-        <main id="chat-container" class="flex-1 relative overflow-y-auto w-full bg-chat-pattern scroll-smooth">
-            <div class="max-w-[700px] mx-auto px-3 py-3 flex flex-col gap-1.5 pb-24 relative" id="chat-canvas">
-                <div class="flex justify-center my-2 animate-fade">
-                    <div class="bg-wa-sysBg text-wa-sysText text-[12px] px-3 py-1.5 rounded-[10px] flex items-center gap-2 max-w-[90%] text-center">
-                        <i class="ph-fill ph-lock-key text-wa-textMuted"></i> As mensagens são protegidas com a criptografia de ponta a ponta.
-                    </div>
-                </div>
-                
-                <div id="typing-indicator" class="hidden w-full flex justify-start mt-1">
-                    <div class="bg-wa-msgIn px-4 py-3 bubble bubble-in w-fit flex items-center gap-1.5 shadow-md">
-                        <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0s"></div>
-                        <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.2s"></div>
-                        <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.4s"></div>
-                    </div>
+            
+            <!-- INDICADOR DE DIGITAÇÃO NO FLUXO -->
+            <div id="typing-indicator" class="hidden w-full flex justify-start mt-1">
+                <div class="bg-wa-msgIn px-4 py-3 bubble bubble-in w-fit flex items-center gap-1.5 shadow-md">
+                    <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0s"></div>
+                    <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.2s"></div>
+                    <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.4s"></div>
                 </div>
             </div>
-        </main>
 
-        <footer id="footer-fake" class="w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a]/90 backdrop-blur-sm transition-all">
-            <div class="w-full max-w-[700px] bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-sm">
-                <i class="ph ph-plus text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+        </div>
+    </main>
+
+    <!-- FOOTER: FAKE INPUT -->
+    <footer id="footer-fake" class="w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a]/90 backdrop-blur-sm transition-all">
+        <div class="w-full max-w-[700px] bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-sm">
+            <i class="ph ph-plus text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+            <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+            <div class="text-wa-textMuted w-full outline-none text-[16px] cursor-default">Digite uma mensagem</div>
+            <i class="ph-fill ph-microphone text-[24px] text-wa-textMuted ml-3 cursor-pointer"></i>
+        </div>
+    </footer>
+
+    <!-- FOOTER: INPUT REAL (Captura de Nome) -->
+    <footer id="footer-real" class="hidden w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a] transition-all">
+        <div class="w-full max-w-[700px] flex items-center gap-2">
+            <div class="flex-1 bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-md">
                 <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
-                <div class="text-wa-textMuted w-full outline-none text-[16px] cursor-default">Digite uma mensagem</div>
-                <i class="ph-fill ph-microphone text-[24px] text-wa-textMuted ml-3 cursor-pointer"></i>
+                <input type="text" id="user-name-input" placeholder="Qual o seu nome?" class="bg-transparent text-wa-text w-full outline-none text-[16px] placeholder:text-wa-textMuted" autocomplete="off">
             </div>
-        </footer>
-
-        <footer id="footer-real" class="hidden w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a] transition-all">
-            <div class="w-full max-w-[700px] flex items-center gap-2">
-                <div class="flex-1 bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-md">
-                    <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
-                    <input type="text" id="user-name-input" placeholder="Qual o seu nome?" class="bg-transparent text-wa-text w-full outline-none text-[16px] placeholder:text-wa-textMuted" autocomplete="off">
-                </div>
-                <div id="btn-send-name" class="w-[46px] h-[46px] rounded-full bg-[#00a884] flex items-center justify-center cursor-pointer shrink-0 shadow-md transform active:scale-95 transition-transform">
-                    <i class="ph-fill ph-paper-plane-right text-white text-xl ml-1"></i>
-                </div>
+            <div id="btn-send-name" class="w-[46px] h-[46px] rounded-full bg-[#00a884] flex items-center justify-center cursor-pointer shrink-0 shadow-md transform active:scale-95 transition-transform">
+                <i class="ph-fill ph-paper-plane-right text-white text-xl ml-1"></i>
             </div>
-        </footer>
-    </div>
+        </div>
+    </footer>
 
-    <!-- SONS E MÍDIA -->
+    <!-- SONS -->
     <audio id="vsl-audio" src="SEU-AUDIO-AQUI.mp3" preload="auto"></audio>
     <audio id="click-sound" src="efeito.mp3" preload="auto"></audio>
 
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
-            const landingPage = document.getElementById("landing-page");
-            const btnStartLP = document.getElementById("btn-start-lp");
-            const mainChat = document.getElementById("main-chat");
-            
             const chatCanvas = document.getElementById("chat-canvas");
             const typingIndicator = document.getElementById("typing-indicator");
             const headerStatus = document.getElementById("header-status");
@@ -214,19 +179,32 @@
 
             let userData = { name: "Amiga", city: "sua região" };
 
-            // Geolocalização Silenciosa
             const fetchLocation = async () => {
                 try {
                     const response = await fetch('https://ipwho.is/');
                     const data = await response.json();
-                    if(data && data.success && data.city) userData.city = data.city;
-                } catch (e) { console.log("Erro localização."); }
+                    if(data && data.success && data.city) {
+                        userData.city = data.city;
+                    }
+                } catch (e) {
+                    console.log("Erro ao buscar localização.");
+                }
             };
             fetchLocation();
 
-            const playClickSound = () => { if (clickSound) { clickSound.currentTime = 0; clickSound.play().catch(e => {}); } };
+            const playClickSound = () => {
+                if (clickSound) {
+                    clickSound.currentTime = 0;
+                    clickSound.play().catch(e => {});
+                }
+            };
+
             const sleep = ms => new Promise(r => setTimeout(r, ms));
-            const scrollToBottom = () => { document.getElementById("chat-container").scrollTo({ top: chatCanvas.scrollHeight, behavior: 'smooth' }); };
+            
+            const scrollToBottom = () => {
+                const container = document.getElementById("chat-container");
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            };
 
             const setTyping = (isTyping) => {
                 if(isTyping) {
@@ -240,185 +218,399 @@
             };
 
             const addBotMessage = async (htmlContent, delayMs = 2000) => {
-                setTyping(true); await sleep(delayMs); setTyping(false);
+                setTyping(true);
+                await sleep(delayMs);
+                setTyping(false);
+                
                 const div = document.createElement("div");
                 div.className = "w-full animate-pop-in mt-1 flex justify-start";
-                div.innerHTML = `<div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[75%] relative pb-6 text-wa-text shadow-sm"><span class="block leading-[20px]">${htmlContent}</span><span class="text-[10px] text-wa-textMuted absolute bottom-1 right-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>`;
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom(); return div; 
+                div.innerHTML = `
+                    <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[75%] relative pb-6 text-wa-text shadow-sm">
+                        <span class="block leading-[20px]">${htmlContent}</span>
+                        <span class="text-[10px] text-wa-textMuted absolute bottom-1 right-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+                return div; 
             };
 
             const addUserMessage = (text) => {
                 const div = document.createElement("div");
                 div.className = "w-full flex justify-end animate-pop-in mt-2 mb-1";
-                div.innerHTML = `<div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[75%] relative pb-6 shadow-sm"><span class="block leading-[20px] text-wa-text font-medium">${text}</span><div class="absolute bottom-1 right-2 flex items-center gap-1"><span class="text-[10px] text-wa-textMuted/80">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span><i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i></div></div>`;
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom();
+                div.innerHTML = `
+                    <div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[75%] relative pb-6 shadow-sm">
+                        <span class="block leading-[20px] text-wa-text font-medium">${text}</span>
+                        <div class="absolute bottom-1 right-2 flex items-center gap-1">
+                            <span class="text-[10px] text-wa-textMuted/80">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i>
+                        </div>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
             };
 
             const showInlineButtons = (options) => {
                 const containerId = "opts-" + Date.now();
                 const div = document.createElement("div");
-                div.id = containerId; div.className = "w-full flex flex-col items-end gap-2 mt-3 animate-slide-up mb-3 pr-1";
+                div.id = containerId;
+                div.className = "w-full flex flex-col items-end gap-2 mt-3 animate-slide-up mb-3 pr-1";
+                
                 options.forEach(opt => {
                     const btn = document.createElement("div");
                     btn.className = "inline-btn max-w-[85%] sm:max-w-[75%]";
                     btn.innerHTML = `<span>${opt.text}</span>`;
+                    
                     btn.addEventListener("click", () => {
-                        playClickSound(); document.getElementById(containerId).remove();
-                        addUserMessage(opt.text); opt.action();
+                        playClickSound(); 
+                        document.getElementById(containerId).remove();
+                        addUserMessage(opt.text);
+                        opt.action();
                     });
+                    
                     div.appendChild(btn);
                 });
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom();
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
             };
 
-            // LOGICA DE TRANSIÇÃO: LP -> CHAT DIRETO
-            btnStartLP.addEventListener("click", () => {
-                playClickSound();
-                landingPage.style.display = "none";
-                mainChat.classList.remove("hidden");
-                runPhase1();
-            });
+            // ==========================================
+            // FLUXO DO FUNIL
+            // ==========================================
 
-            // FUNIL LOGIC (Com Delays Humano)
             const runPhase1 = async () => {
                 await addBotMessage("Amiga, descobri uma verdadeira mina de ouro pra faturar alto sem sair da cozinha. 🍦", 2500);
                 await addBotMessage("Se você tem um congelador comum em casa, eu vou te provar como é possível lucrar até <b>R$ 3.240 por mês</b> vendendo Picolé Trufado Artesanal.", 5000);
-                await addBotMessage("Mas deixa eu te contar um segredo... tem donas de casa fazendo MUITO MAIS QUE ISSO todos os meses! 🚨", 5500);
+                await addBotMessage("Mas deixa eu te contar um segredo... tem donas de casa e confeiteiras fazendo MUITO MAIS QUE ISSO todos os meses! 🚨", 5500);
                 await addBotMessage("Mas me conta uma coisa... Qual é o seu <b>PRINCIPAL OBJETIVO</b> hoje?", 3500);
-                showInlineButtons([{ text: "Fazer meus primeiros R$ 300! 🔥", action: () => runPhase2() }, { text: "Renda extra todo o mês 💸", action: () => runPhase2() }, { text: "Criar meu negócio do zero 😍", action: () => runPhase2() }]);
+
+                showInlineButtons([
+                    { text: "Fazer meus primeiros R$ 300! 🔥", action: () => runPhase2() },
+                    { text: "Renda extra todo o mês 💸", action: () => runPhase2() },
+                    { text: "Criar meu negócio do zero 😍", action: () => runPhase2() }
+                ]);
             };
 
             const runPhase2 = async () => {
                 await addBotMessage("Que maravilha! 🥰 Mas deixa eu te fazer uma perguntinha...", 3500);
                 await addBotMessage("Pra eu te mostrar o caminho certinho e não te passar informação à toa... Qual o seu nível de experiência com doces?", 5000);
-                showInlineButtons([{ text: "Já faço e vendo 🏆", action: () => runPhase3() }, { text: "Zero, quero aprender! 🤔", action: () => runPhase3() }]);
+                
+                showInlineButtons([
+                    { text: "Já faço e vendo 🏆", action: () => runPhase3() },
+                    { text: "Zero, quero aprender! 🤔", action: () => runPhase3() }
+                ]);
             };
 
             const runPhase3 = async () => {
                 await addBotMessage("Perfeita! Vamos <b>DESTRAVAR</b> sua cozinha pra que você tenha lucro de verdade todos os dias.", 4500);
                 await addBotMessage("E antes de te mostrar como fazer sua primeira <b>produção</b> em MENOS DE 24 HORAS, ouve esse áudio rapidinho:", 5000);
-                renderAudioPlayer(); await sleep(30000);
+                
+                renderAudioPlayer();
+                await sleep(30000);
+                
                 await addBotMessage("Posso te mandar umas fotos mostrando na prática a lindeza que eles ficam?", 4000);
-                showInlineButtons([{ text: "Nossa, sim, por favor! 🔥", action: () => runPhase4() }]);
+
+                showInlineButtons([
+                    { text: "Nossa, sim, por favor! 🔥", action: () => runPhase4() }
+                ]);
             };
 
             const runPhase4 = async () => {
-                setTyping(true); await sleep(3500); setTyping(false);
-                const gridHtml = `<div class="grid grid-cols-2 gap-3 w-full max-w-[340px]"><img src="picole-grid-1.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"><img src="picole-grid-2.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"><img src="picole-grid-3.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"><img src="picole-grid-4.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"><img src="picole-grid-5.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"><img src="picole-grid-6.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10"></div>`;
-                const div = document.createElement("div"); div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
-                div.innerHTML = `<div class="relative max-w-[90%] sm:max-w-[85%]">${gridHtml}<span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>`;
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom();
+                setTyping(true);
+                await sleep(3500);
+                setTyping(false);
+
+                const gridHtml = `
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-[340px]">
+                        <img src="picole-grid-1.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-2.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-3.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-4.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-5.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-6.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                    </div>`;
+                
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
+                div.innerHTML = `
+                    <div class="relative max-w-[90%] sm:max-w-[85%]">
+                        ${gridHtml}
+                        <span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+
                 await addBotMessage("Esses são os picolés com casquinha de chocolate fininha e recheio trufado... eles vendem sozinhos de tão lindos! 🤤", 5500);
                 await addBotMessage("Pra eu te explicar como você vai fazer essa maravilha aí na sua casa, como posso te chamar? (Digita seu nome abaixo) 👇", 4500);
-                footerFake.classList.add('hidden'); footerReal.classList.remove('hidden'); nameInput.focus();
+                
+                footerFake.classList.add('hidden');
+                footerReal.classList.remove('hidden');
+                nameInput.focus();
             };
 
             const submitName = () => {
-                const name = nameInput.value.trim(); if(name.length < 2) return;
-                playClickSound(); userData.name = name; footerReal.classList.add('hidden'); footerFake.classList.remove('hidden');
-                addUserMessage(userData.name); runPhase6();
+                const name = nameInput.value.trim();
+                if(name.length < 2) return;
+                
+                playClickSound(); 
+                userData.name = name;
+                footerReal.classList.add('hidden');
+                footerFake.classList.remove('hidden');
+                addUserMessage(userData.name);
+                runPhase6();
             };
-            btnSendName.addEventListener('click', submitName); nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') submitName(); });
+            btnSendName.addEventListener('click', submitName);
+            nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') submitName(); });
 
             const runPhase6 = async () => {
                 await addBotMessage(`<b>${userData.name}</b>, muito prazer! ❤️`, 3000);
                 await addBotMessage("Me dá só um segundinho, vou dar uma pesquisada rápida aqui no Google pra ver como tão as vendas de picolés artesanais aí na sua região... 🔍", 6000);
+
                 const loadingMsg = await addBotMessage("<div class='flex items-center gap-2'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Pesquisando no Google...</div>", 2500);
+                
                 await sleep(3500); 
                 const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
-                if (spanToUpdate) spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Busca Concluída!</div>`;
+                if (spanToUpdate) {
+                    spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Busca Concluída!</div>`;
+                }
+                
                 await addBotMessage(`Menina, olha que oportunidade! Na região de <b>${userData.city}</b> eu não encontrei quase ninguém vendendo esses picolés gourmet ainda! 😱`, 5500);
                 await addBotMessage("Isso significa que você vai ser uma das primeiras e vai poder aproveitar o mercado livre pra lucrar muito aí! 💸", 5500);
+                await addBotMessage("Mas pra dar certo, você precisa de um pouquinho de dedicação...", 4000);
                 await addBotMessage("Você consegue tirar pelo menos <b>2 horinhas livres</b> uma vez por semana pra produção?", 4000);
-                showInlineButtons([{ text: "Consigo sim, com certeza! 😄", action: () => runPhase7() }, { text: "Tenho pouco tempo, mas eu tento 😉", action: () => runPhase7() }]);
+                await addBotMessage("Pode ser dividido em 2 ou 3 dias também, super tranquilo...", 3500);
+
+                showInlineButtons([
+                    { text: "Consigo sim, com certeza! 😄", action: () => runPhase7() },
+                    { text: "Tenho pouco tempo, mas eu tento 😉", action: () => runPhase7() }
+                ]);
             };
 
             const runPhase7 = async () => {
-                await addBotMessage(`Ótimo! Então, <b>${userData.name}</b>, vou só dar uma olhadinha no seu perfil pra ver se posso liberar seu acesso agora. Rapidinho...`, 5000);
+                await addBotMessage(`Ótimo! Então, <b>${userData.name}</b>, vou só dar uma olhadinha no seu perfil com base no que a gente conversou pra ver se posso liberar seu acesso agora. Rapidinho...`, 5000);
+                
                 const loadingMsg = await addBotMessage("<div class='flex items-center gap-2 text-wa-sysText font-semibold'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Analisando o perfil...</div>", 2500);
+                
                 await sleep(4000);
                 const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
-                if (spanToUpdate) spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Acesso LIBERADO</div>`;
+                if (spanToUpdate) {
+                    spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Acesso LIBERADO</div>`;
+                }
+                
                 await addBotMessage("ACESSO LIBERADO COM SUCESSO! 🎉", 3000);
                 await addBotMessage(`Então é isso TUDO que você vai receber hoje: 👇<br><br>✅ <b>Vídeo Aulas em Alta Resolução</b> (Passo a passo prático)<br>✅ O Segredo do <b>Recheio Trufado</b> e Casquinha Crocante<br>✅ Cardápio Enxuto: <b>15 Sabores Campeões</b> de Venda<br>✅ Técnica de Armazenamento pra não perder estoque<br>✅ Roteiro de Vendas: Como esgotar seu estoque em 24h<br>✅ Acesso Vitalício + <b>Suporte VIP</b> direto comigo<br>✅ Lindo <b>Certificado de Conclusão Oficial</b><br><br>E mais os <b>3 BÔNUS:</b><br>🎁 Bônus 1: Pack Canva de Artes Prontas<br>🎁 Bônus 2: Script de Vendas p/ WhatsApp<br>🎁 Bônus 3: Calculadora Automática de Lucro`, 7500);
+                
+                // ==========================================
+                // SEÇÃO DE PROVA SOCIAL ATUALIZADA (2 FOTOS GRANDES)
+                // ==========================================
                 await addBotMessage("E se você tá na dúvida se vai conseguir fazer... Dá uma olhadinha no que as minhas alunas estão aprontando! 🥰", 4000);
-                setTyping(true); await sleep(3500); setTyping(false);
-                const divSocial = document.createElement("div"); divSocial.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
-                divSocial.innerHTML = `<div class="relative max-w-[95%] sm:max-w-[85%]"><div class="flex flex-col gap-3 w-full max-w-[320px]"><img src="prova1.webp" class="w-full h-auto rounded-xl shadow-md border border-white/10"><img src="prova2.webp" class="w-full h-auto rounded-xl shadow-md border border-white/10"></div><span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></div>`;
-                chatCanvas.insertBefore(divSocial, typingIndicator); scrollToBottom();
-                await addBotMessage("São mulheres comuns, que começaram do zero absoluto e hoje já estão lucrando. É só seguir o passo a passo.", 5000);
+                
+                setTyping(true);
+                await sleep(3500);
+                setTyping(false);
+                
+                // Layout de pilha vertical para máxima legibilidade
+                const socialHtml = `
+                    <div class="flex flex-col gap-3 w-full max-w-[320px]">
+                        <img src="prova1.webp" class="w-full h-auto object-contain rounded-xl shadow-md border border-white/10">
+                        <img src="prova2.webp" class="w-full h-auto object-contain rounded-xl shadow-md border border-white/10">
+                    </div>`;
+                
+                const divSocial = document.createElement("div");
+                divSocial.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
+                divSocial.innerHTML = `
+                    <div class="relative max-w-[95%] sm:max-w-[85%]">
+                        ${socialHtml}
+                        <span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(divSocial, typingIndicator);
+                scrollToBottom();
+
+                await addBotMessage("São mulheres comuns, que começaram do zero absoluto e hoje já estão lucrando na própria cozinha. É só seguir o passo a passo.", 5000);
                 await addBotMessage(`<b>${userData.name}</b>, preparada pra dar esse passo?`, 3500);
-                showInlineButtons([{ text: "100% pronta! Quero começar! 🔥", action: () => runPhase8() }, { text: "Ainda tenho algumas dúvidas... 😥", action: () => runPhase8() }]);
+
+                showInlineButtons([
+                    { text: "100% pronta! Quero começar! 🔥", action: () => runPhase8() },
+                    { text: "Ainda tenho algumas dúvidas... 😥", action: () => runPhase8() }
+                ]);
             };
 
             const runPhase8 = async () => {
                 await addBotMessage("Eu poderia cobrar facilmente R$ 197,00 pelo Treinamento com todas as aulas...", 4500);
                 await addBotMessage(`Com os <b>3 BÔNUS PRONTOS</b> e todo o material que eu preparei <b>especialmente</b> pra você, ${userData.name}.`, 5000);
                 await addBotMessage("Mas isso seria completamente injusto e eu quero realmente te ajudar...", 4000);
+                await addBotMessage("Também poderia ser GRÁTIS, mas você não daria valor e eu teria perdido meu tempo.", 5000);
                 await addBotMessage("Então, apenas <b>AGORA</b>, vou te dar a CHANCE de ganhar um PRÊMIO NA RASPADINHA 🔥", 5000);
                 await addBotMessage("RASPOU, GANHOU. Simples assim...", 3500);
+                
                 renderScratchCard();
             };
 
             const renderAudioPlayer = () => {
-                const div = document.createElement("div"); div.className = "w-full animate-pop-in mt-1 flex justify-start";
-                div.innerHTML = `<div class="bg-wa-msgIn p-2 bubble bubble-in w-[260px] shadow-sm flex items-center gap-3 relative pb-6 text-wa-text"><img src="picole-hero.webp" class="w-12 h-12 rounded-full object-cover"><div id="btn-play-audio" class="text-3xl text-wa-textMuted cursor-pointer active:scale-95 transition-transform"><i class="ph-fill ph-play"></i></div><div class="flex-1 flex flex-col justify-center gap-1"><div class="w-full bg-[#3b4a54] h-1.5 rounded-full overflow-hidden relative"><div id="audio-progress" class="bg-[#00a884] h-full w-0 rounded-full transition-all duration-[200ms] ease-linear"></div><div id="audio-thumb" class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00a884] rounded-full shadow-md" style="left: 0%;"></div></div><span class="text-[11px] text-wa-textMuted" id="audio-time">0:00</span></div><span class="text-[10px] text-[#00a884] absolute bottom-1 right-2 flex items-center gap-1"><i id="mic-icon" class="ph-fill ph-microphone"></i> 0:30</span></div>`;
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom();
-                const audioEl = document.getElementById("vsl-audio"); const playBtn = document.getElementById("btn-play-audio");
-                const progressBar = document.getElementById("audio-progress"); const audioThumb = document.getElementById("audio-thumb");
-                const timeDisplay = document.getElementById("audio-time"); const micIcon = document.getElementById("mic-icon");
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-1 flex justify-start";
+                div.innerHTML = `
+                    <div class="bg-wa-msgIn p-2 bubble bubble-in w-[260px] shadow-sm flex items-center gap-3 relative pb-6 text-wa-text">
+                        <img src="picole-hero.webp" class="w-12 h-12 rounded-full object-cover">
+                        <div id="btn-play-audio" class="text-3xl text-wa-textMuted cursor-pointer active:scale-95 transition-transform">
+                            <i class="ph-fill ph-play"></i>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center gap-1">
+                            <div class="w-full bg-[#3b4a54] h-1.5 rounded-full overflow-hidden relative">
+                                <div id="audio-progress" class="bg-[#00a884] h-full w-0 rounded-full transition-all duration-[200ms] ease-linear"></div>
+                                <div id="audio-thumb" class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00a884] rounded-full shadow-md" style="left: 0%;"></div>
+                            </div>
+                            <span class="text-[11px] text-wa-textMuted" id="audio-time">0:00</span>
+                        </div>
+                        <span class="text-[10px] text-[#00a884] absolute bottom-1 right-2 flex items-center gap-1">
+                            <i id="mic-icon" class="ph-fill ph-microphone"></i> 0:30
+                        </span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+
+                const audioEl = document.getElementById("vsl-audio");
+                const playBtn = document.getElementById("btn-play-audio");
+                const progressBar = document.getElementById("audio-progress");
+                const audioThumb = document.getElementById("audio-thumb");
+                const timeDisplay = document.getElementById("audio-time");
+                const micIcon = document.getElementById("mic-icon");
+
                 audioEl.load();
+
                 playBtn.addEventListener("click", () => {
-                    playClickSound(); micIcon.classList.remove("text-[#00a884]"); micIcon.classList.add("text-[#53bdeb]");
-                    if (audioEl.paused) { audioEl.play(); playBtn.innerHTML = '<i class="ph-fill ph-pause"></i>'; } else { audioEl.pause(); playBtn.innerHTML = '<i class="ph-fill ph-play"></i>'; }
+                    playClickSound(); 
+                    micIcon.classList.remove("text-[#00a884]");
+                    micIcon.classList.add("text-[#53bdeb]");
+
+                    if (audioEl.paused) {
+                        audioEl.play();
+                        playBtn.innerHTML = '<i class="ph-fill ph-pause"></i>';
+                    } else {
+                        audioEl.pause();
+                        playBtn.innerHTML = '<i class="ph-fill ph-play"></i>';
+                    }
                 });
+
                 audioEl.addEventListener("timeupdate", () => {
                     const percent = (audioEl.currentTime / audioEl.duration) * 100;
-                    progressBar.style.width = `${percent}%`; audioThumb.style.left = `calc(${percent}% - 6px)`;
-                    let mins = Math.floor(audioEl.currentTime / 60); let secs = Math.floor(audioEl.currentTime % 60);
+                    progressBar.style.width = `${percent}%`;
+                    audioThumb.style.left = `calc(${percent}% - 6px)`;
+                    let mins = Math.floor(audioEl.currentTime / 60);
+                    let secs = Math.floor(audioEl.currentTime % 60);
                     timeDisplay.innerText = `${mins}:${secs < 10 ? '0'+secs : secs}`;
+                });
+
+                audioEl.addEventListener("ended", () => {
+                    playBtn.innerHTML = '<i class="ph-fill ph-play"></i>';
+                    progressBar.style.width = `0%`;
+                    audioThumb.style.left = `0%`;
+                    timeDisplay.innerText = "0:00";
                 });
             };
 
             const renderScratchCard = () => {
-                const div = document.createElement("div"); div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start pl-1";
-                div.innerHTML = `<div class="scratch-container shadow-2xl relative"><div class="scratch-base"><span class="text-2xl mb-1">🎉</span><h3 class="text-[12px] font-bold text-green-100 uppercase tracking-widest mb-1">PARABÉNS!</h3><p class="text-[15px] font-black leading-tight drop-shadow-md">Você ganhou R$ 160,00 de DESCONTO</p></div><canvas id="scratch-canvas"></canvas></div>`;
-                chatCanvas.insertBefore(div, typingIndicator); scrollToBottom(); initScratchLogic();
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start pl-1";
+                div.innerHTML = `
+                    <div class="scratch-container shadow-2xl relative">
+                        <div class="scratch-base">
+                            <span class="text-2xl mb-1">🎉</span>
+                            <h3 class="text-[12px] font-bold text-green-100 uppercase tracking-widest mb-1">PARABÉNS!</h3>
+                            <p class="text-[15px] font-black leading-tight drop-shadow-md">Você ganhou R$ 160,00 de DESCONTO</p>
+                        </div>
+                        <canvas id="scratch-canvas"></canvas>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+                initScratchLogic();
             };
 
             const initScratchLogic = () => {
-                const canvas = document.getElementById("scratch-canvas"); const ctx = canvas.getContext("2d");
-                let isDrawing = false; let isCleared = false;
-                canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight;
-                ctx.fillStyle = "#fbbf24"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.font = "900 18px Arial"; ctx.fillStyle = "#78350f"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-                ctx.fillText("RASPE E GANHE NA HORA!", canvas.width / 2, canvas.height / 2); ctx.globalCompositeOperation = "destination-out";
-                const scratch = (e) => {
-                    if (!isDrawing || isCleared) return; e.preventDefault();
+                const canvas = document.getElementById("scratch-canvas");
+                const ctx = canvas.getContext("2d");
+                let isDrawing = false;
+                let isCleared = false;
+
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                ctx.fillStyle = "#fbbf24"; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = "900 18px Arial";
+                ctx.fillStyle = "#78350f"; 
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("RASPE E GANHE NA HORA!", canvas.width / 2, canvas.height / 2);
+                ctx.globalCompositeOperation = "destination-out";
+
+                const getMousePos = (canvas, evt) => {
                     const rect = canvas.getBoundingClientRect();
-                    const x = ((e.clientX || (e.touches && e.touches[0].clientX)) - rect.left) * (canvas.width / rect.width);
-                    const y = ((e.clientY || (e.touches && e.touches[0].clientY)) - rect.top) * (canvas.height / rect.height);
-                    ctx.beginPath(); ctx.arc(x, y, 25, 0, Math.PI * 2, false); ctx.fill();
+                    let clientX = evt.clientX || (evt.touches && evt.touches[0].clientX);
+                    let clientY = evt.clientY || (evt.touches && evt.touches[0].clientY);
+                    return {
+                        x: (clientX - rect.left) * (canvas.width / rect.width),
+                        y: (clientY - rect.top) * (canvas.height / rect.height)
+                    };
+                };
+
+                const scratch = (e) => {
+                    if (!isDrawing || isCleared) return;
+                    e.preventDefault(); 
+                    const pos = getMousePos(canvas, e);
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    checkClearPercentage();
+                };
+
+                canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+                canvas.addEventListener('mousemove', scratch);
+                canvas.addEventListener('mouseup', () => { isDrawing = false; });
+                canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+                canvas.addEventListener('touchmove', scratch, {passive: false});
+                canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+                const checkClearPercentage = () => {
                     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                    let transparent = 0; for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] === 0) transparent++; }
-                    if ((transparent / (pixels.length / 4)) > 0.45 && !isCleared) {
-                        isCleared = true; canvas.style.opacity = "0";
-                        setTimeout(() => { canvas.style.display = "none"; showFinalPitch(); }, 500);
+                    let transparentPixels = 0;
+                    for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] === 0) transparentPixels++; }
+                    const clearPercentage = (transparentPixels / (pixels.length / 4)) * 100;
+                    if (clearPercentage > 45 && !isCleared) {
+                        isCleared = true;
+                        canvas.style.transition = "opacity 0.5s ease";
+                        canvas.style.opacity = "0";
+                        setTimeout(() => {
+                            canvas.style.display = "none";
+                            showFinalPitch();
+                        }, 500);
                     }
                 };
-                canvas.addEventListener('mousedown', () => isDrawing = true); canvas.addEventListener('touchstart', () => isDrawing = true);
-                canvas.addEventListener('mousemove', scratch); canvas.addEventListener('touchmove', scratch);
-                window.addEventListener('mouseup', () => isDrawing = false); window.addEventListener('touchend', () => isDrawing = false);
             };
 
             const showFinalPitch = async () => {
                 await addBotMessage(`<b>CARACA ${userData.name}</b>, tirou o DESCONTO MÁXIMO, já começou bem ein... 🔥`, 4000);
-                await addBotMessage("Então você não vai pagar os R$ 197,00... com o desconto você vai pagar:", 4500);
+                await addBotMessage("Então você não vai pagar os R$ 197,00 que falei pra você... com o desconto você vai pagar:", 4500);
                 await addBotMessage("<b>APENAS R$ 37,00 À VISTA</b> 🔥", 3500);
-                const finalLinks = document.createElement("div"); finalLinks.className = "w-full animate-pop-in mt-2 mb-8 flex flex-col gap-2 justify-end items-end pr-1";
-                finalLinks.innerHTML = `<a href="https://confeiteira-mari.pay.yampi.com.br/r/K8MZLO5HWH" class="bg-[#25D366] text-white text-[15px] font-black px-4 py-3.5 bubble bubble-out flex items-center justify-center gap-2 w-full max-w-[280px] shadow-lg active:scale-95 transition-transform border-t-0 hover:bg-[#20bd5a]"><i class="ph-fill ph-check-circle text-xl"></i> COMEÇAR AGORA (R$ 37)</a>`;
-                chatCanvas.insertBefore(finalLinks, typingIndicator); scrollToBottom();
+                await addBotMessage(`A escolha agora é sua, <b>${userData.name}</b> ! 🔥`, 3500);
+
+                const finalLinks = document.createElement("div");
+                finalLinks.className = "w-full animate-pop-in mt-2 mb-8 flex flex-col gap-2 justify-end items-end pr-1";
+                finalLinks.innerHTML = `
+                    <a href="https://confeiteira-mari.pay.yampi.com.br/r/K8MZLO5HWH" class="bg-[#25D366] text-white text-[15px] font-black px-4 py-3.5 bubble bubble-out flex items-center justify-center gap-2 w-full max-w-[280px] shadow-lg active:scale-95 transition-transform border-t-0 hover:bg-[#20bd5a]">
+                        <i class="ph-fill ph-check-circle text-xl"></i> COMEÇAR AGORA (R$ 37)
+                    </a>`;
+                
+                chatCanvas.insertBefore(finalLinks, typingIndicator);
+                scrollToBottom();
             };
+
+            runPhase1();
         });
     </script>
 </body>
