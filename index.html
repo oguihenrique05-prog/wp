@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Picolé Lucrativo</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Configuração do Tailwind -->
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -25,34 +23,18 @@
                             textMuted: '#8696a0',
                             sysBg: '#182229',
                             sysText: '#8696a0',
-                            btnGreen: '#25D366'
-                        },
-                        brand: {
-                            primary: '#ec4899', 
-                            dark: '#be185d'
+                            btnGreen: '#00a884'
                         }
                     },
                     keyframes: {
-                        blink: {
-                            '0%, 100%': { opacity: '0.4' },
-                            '50%': { opacity: '1' }
-                        },
-                        shake: {
-                            '0%, 100%': { transform: 'translateX(0)' },
-                            '25%': { transform: 'translateX(-4px)' },
-                            '75%': { transform: 'translateX(4px)' }
-                        },
-                        toast: {
-                            '0%': { opacity: '0', transform: 'translateY(20px) translateX(-50%)' },
-                            '10%': { opacity: '1', transform: 'translateY(0) translateX(-50%)' },
-                            '90%': { opacity: '1', transform: 'translateY(0) translateX(-50%)' },
-                            '100%': { opacity: '0', transform: 'translateY(-20px) translateX(-50%)' }
-                        }
+                        blink: { '0%, 100%': { opacity: '0.4' }, '50%': { opacity: '1' } },
+                        popIn: { '0%': { transform: 'scale(0.95)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+                        slideUp: { '0%': { transform: 'translateY(20px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } }
                     },
                     animation: {
                         'typing-dot': 'blink 1.4s infinite both',
-                        'shake': 'shake 0.3s ease-in-out',
-                        'toast': 'toast 2s forwards'
+                        'pop-in': 'popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'slide-up': 'slideUp 0.4s ease-out forwards'
                     }
                 }
             }
@@ -63,1003 +45,551 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
         
-        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+        body { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; overscroll-behavior-y: none; }
         
         .bg-chat-pattern {
             background-color: #0b141a;
             position: relative;
         }
-
         .bg-chat-pattern::before {
             content: "";
             position: absolute;
             inset: 0;
-            background-image: url('chat-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.8;
+            /* CDN Direta do Padrão WhatsApp Doodles Transparente */
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
+            background-size: 400px;
+            background-repeat: repeat;
+            opacity: 0.06; /* Opacidade sutil idêntica ao app nativo no dark mode */
             z-index: 0;
             pointer-events: none;
         }
 
-        #chat-canvas {
-            position: relative;
-            z-index: 10;
-        }
-
+        #chat-canvas { position: relative; z-index: 10; }
+        
         .bubble { border-radius: 10px; box-shadow: 0 1px 0.5px rgba(11,20,26,.13); }
         .bubble-in { border-top-left-radius: 0; }
         .bubble-out { border-top-right-radius: 0; }
-        .btn-bottom-rounded { border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
 
-        .flow-item {
-            display: none;
-            opacity: 0;
-            transform: translateY(15px);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        }
-        
-        .flow-item.show {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .grid-img {
-            opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
-        }
-        .grid-img.fade-in {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Classes para o Modal da Área de Membros e Upsell */
-        #members-area-modal.open, #upsell-modal.open {
-            display: flex !important;
-        }
-        .locked-item { cursor: not-allowed; position: relative; }
-        .locked-item:active {
-            animation: shake 0.3s ease-in-out;
-        }
-        .locked-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: grayscale(20%);
+        .inline-btn {
+            background-color: #005c4b; 
+            color: #e9edef;
+            border-radius: 10px;
+            border-top-right-radius: 0; 
+            padding: 8px 12px;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 1px 0.5px rgba(11,20,26,.13);
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 10;
+            justify-content: space-between;
+            transition: transform 0.1s, opacity 0.1s;
         }
+        .inline-btn:active { transform: scale(0.98); opacity: 0.9; }
+        
+        .scratch-container { position: relative; width: 100%; max-width: 320px; height: 160px; margin: 0 auto; user-select: none; }
+        .scratch-base { position: absolute; inset: 0; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(135deg, #00a884, #005c4b); color: white; text-align: center; padding: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+        #scratch-canvas { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 16px; cursor: pointer; z-index: 20; touch-action: none; }
     </style>
-
-    <script>
-    (function () {
-      "use strict";
-
-      var API_BASE = "https://brain-saas.vercel.app";
-      var PIXEL_PUBLIC_KEY = "px_D7XBCpYqp6dO4nTz";
-      var prefix = ["https://lastlink.com","https://kirvano.com","https://pay.kirvano.com","https://checkout.kirvano.com","pay.yampi.com.br"];
-      var TRACK_URL = API_BASE.replace(/\/$/, "") + "/api/track";
-
-      function getCookie(name) {
-        var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
-        return match ? decodeURIComponent(match[2]) : null;
-      }
-
-      function setCookie(name, value, days) {
-        var d = new Date();
-        d.setTime(d.getTime() + (days || 365) * 24 * 60 * 60 * 1000);
-        document.cookie =
-          name + "=" + encodeURIComponent(value) +
-          "; path=/; expires=" + d.toUTCString() + "; SameSite=Lax";
-      }
-
-      function uuid() {
-        if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-          var r = (Math.random() * 16) | 0;
-          var v = c === "x" ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-        });
-      }
-
-      function getOrCreateSid() {
-        var sid = getCookie("mcapi_sid");
-        if (!sid) {
-          sid = uuid();
-          setCookie("mcapi_sid", sid, 365);
-        }
-        return sid;
-      }
-
-      function getQueryParam(name) {
-        try {
-          return new URL(location.href).searchParams.get(name);
-        } catch (e) {
-          return null;
-        }
-      }
-
-      function ensureFbc() {
-        var existing = getCookie("_fbc");
-        if (existing) return existing;
-
-        var fbclid = getQueryParam("fbclid");
-        if (!fbclid) return null;
-
-        var fbc = "fb.1." + Date.now() + "." + fbclid;
-        setCookie("_fbc", fbc, 90);
-        return fbc;
-      }
-
-      function safeResolveUrl(href) {
-        var resolved = href;
-        try { resolved = new URL(href, location.href).href; } catch (e) {}
-        return resolved;
-      }
-
-      function looksLikeCheckout(url) {
-        url = String(url || "");
-        for (var j = 0; j < prefix.length; j++) {
-          if (url.indexOf(prefix[j]) !== -1) return true;
-        }
-        var low = url.toLowerCase();
-        if (low.indexOf("checkout") !== -1 || low.indexOf("pay") !== -1 || low.indexOf("payment") !== -1) return true;
-        return false;
-      }
-
-      function buildUtms() {
-        var r = new URL(location.href);
-        var sid = getOrCreateSid();
-        var out = {};
-
-        out.utm_source = r.searchParams.get("utm_source") || "direto";
-        out.utm_term = "sid:" + sid;
-
-        if (r.searchParams.get("utm_medium")) out.utm_medium = r.searchParams.get("utm_medium");
-        if (r.searchParams.get("utm_campaign")) out.utm_campaign = r.searchParams.get("utm_campaign");
-        if (r.searchParams.get("utm_content")) out.utm_content = r.searchParams.get("utm_content");
-        if (r.searchParams.get("fbclid")) out.fbclid = r.searchParams.get("fbclid");
-
-        return out;
-      }
-
-      function applyUtmsToUrl(resolvedUrl, utms, forceUtmTerm) {
-        try {
-          var u = new URL(resolvedUrl);
-
-          for (var key in utms) {
-            if (!utms.hasOwnProperty(key)) continue;
-            if (!utms[key]) continue;
-
-            if (key === "utm_term") {
-              if (forceUtmTerm) u.searchParams.set("utm_term", utms.utm_term);
-              else if (!u.searchParams.get("utm_term")) u.searchParams.set("utm_term", utms.utm_term);
-              continue;
-            }
-
-            if (!u.searchParams.get(key)) u.searchParams.set(key, utms[key]);
-          }
-
-          return u.toString();
-        } catch (e) {
-          return resolvedUrl;
-        }
-      }
-
-      function sendEvent(payload) {
-        try {
-          if (navigator.sendBeacon) {
-            var blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
-            navigator.sendBeacon(TRACK_URL, blob);
-            return;
-          }
-        } catch (e) {}
-
-        fetch(TRACK_URL, {
-          method: "POST",
-          mode: "cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          keepalive: true
-        }).catch(function(){});
-      }
-
-      function postEvent(eventName) {
-        var sid = getOrCreateSid();
-
-        var payload = {
-          pixel_id: PIXEL_PUBLIC_KEY,
-          sid: sid,
-          event: eventName,
-          event_id: eventName + "_" + sid + "_" + Date.now(),
-          url: location.href,
-          utm: buildUtms(),
-          fbp: getCookie("_fbp"),
-          fbc: ensureFbc()
-        };
-
-        sendEvent(payload);
-      }
-
-      function updateLinks() {
-        var utms = buildUtms();
-        var anchors = document.querySelectorAll("a[href]");
-        for (var i = 0; i < anchors.length; i++) {
-          var a = anchors[i];
-          var href = a.getAttribute("href") || "";
-          if (!href) continue;
-
-          var resolved = safeResolveUrl(href);
-          if (!looksLikeCheckout(resolved)) continue;
-
-          a.href = applyUtmsToUrl(resolved, utms, true);
-        }
-      }
-
-      function init() {
-        updateLinks();
-        postEvent("PageView");
-
-        var tries = 0;
-        var t = setInterval(function () {
-          tries++;
-          updateLinks();
-          if (tries >= 10) clearInterval(t);
-        }, 1000);
-
-        if (window.MutationObserver) {
-          var mo = new MutationObserver(function () { updateLinks(); });
-          mo.observe(document.documentElement, { childList: true, subtree: true });
-        }
-      }
-
-      document.addEventListener("click", function (e) {
-        var el = e.target;
-        var a = el && el.closest ? el.closest("a") : null;
-        if (!a) return;
-
-        var href = a.getAttribute("href") || "";
-        if (!href) return;
-
-        var resolved = safeResolveUrl(href);
-        if (!looksLikeCheckout(resolved)) return;
-
-        var utms = buildUtms();
-        a.href = applyUtmsToUrl(resolved, utms, true);
-
-        postEvent("InitiateCheckout");
-      }, true);
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-      } else {
-        init();
-      }
-    })();
-    </script>
 </head>
-<body class="bg-wa-bg text-wa-text h-screen flex flex-col overflow-hidden select-none relative">
 
-    <!-- AVISO DE CONTEÚDO BLOQUEADO (Toast) -->
-    <div id="locked-toast" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-[200] bg-red-600 text-white px-4 py-2 rounded-full shadow-2xl font-bold text-sm flex items-center gap-2 whitespace-nowrap pointer-events-none">
-        <i class="ph-bold ph-lock-key text-lg"></i>
-        Visitante: Inscreve-te para desbloquear
-    </div>
-
-    <!-- MODAL DE UPSELL (R$ 17 -> R$ 27) -->
-    <div id="upsell-modal" class="fixed inset-0 z-[150] bg-black/80 flex items-center justify-center hidden opacity-0 transition-opacity duration-300 px-4">
-        <!-- Caixa principal -->
-        <div id="upsell-content" class="bg-white w-full max-w-sm rounded-[24px] overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col">
-            <!-- Header de Alerta -->
-            <div class="bg-red-600 py-5 px-4 text-center relative">
-                <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-red-600 rotate-45"></div>
-                <i class="ph-fill ph-warning-circle text-white text-[42px] mb-1 drop-shadow-md"></i>
-                <h2 class="text-white font-black text-xl uppercase tracking-wider">Espera! Não feche...</h2>
-            </div>
-            
-            <!-- Corpo da Oferta -->
-            <div class="px-6 pt-8 pb-6 flex flex-col items-center">
-                <p class="text-gray-800 text-[15px] mb-5 text-center leading-snug">
-                    Você está prestes a levar <strong class="text-red-600">apenas a apostila em texto</strong>. Tem certeza?
-                </p>
-                
-                <!-- Caixinha de Contraste -->
-                <div class="bg-orange-50 border-2 border-orange-200 rounded-xl p-4 mb-6 w-full text-center relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest shadow-sm">Oferta Única</div>
-                    <p class="text-orange-900 font-bold text-[14px] mb-2 leading-tight">Faça um Upgrade agora!</p>
-                    <p class="text-orange-800 text-[12px] leading-tight">
-                        Adicione todas as <strong>Vídeo Aulas Passo a Passo</strong> + <strong>Suporte VIP</strong> + <strong>Todos os Bônus</strong> por apenas mais <span class="bg-orange-200 px-1.5 py-0.5 rounded text-orange-900 font-black">R$ 10,00</span>.
-                    </p>
-                </div>
-                
-                <!-- Botão Principal (Ação de R$ 27) -->
-                <a href="https://confeiteira-mari.pay.yampi.com.br/r/KBLI33QXSY" class="w-full bg-[#00a884] hover:bg-[#008f6f] text-white font-black py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,168,132,0.39)] flex justify-center items-center gap-2 transition-transform active:scale-95 text-[14px] mb-4 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition"></div>
-                    <i class="ph-fill ph-plus-circle text-xl"></i>
-                    SIM! QUERO O PACOTE (R$ 27)
-                </a>
-                
-                <!-- Botão de Fuga (Ação de R$ 17 original) -->
-                <a href="#" id="btn-refuse-upsell" class="w-full text-gray-400 font-semibold text-[12px] text-center underline hover:text-gray-600 transition-colors">
-                    Não, obrigado. Quero apenas o texto por R$ 17.
-                </a>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- ÁREA DE MEMBROS FALSA (Foco Mobile Absoluto) -->
-    <div id="members-area-modal" class="fixed inset-0 z-[100] bg-black/80 flex justify-center hidden opacity-0 transition-opacity duration-300">
-        <!-- Container Restrito (Força o layout Mobile mesmo no PC) -->
-        <div class="w-full h-full max-w-md bg-[#f4f7f9] relative flex flex-col sm:h-[95vh] sm:mt-[2.5vh] sm:rounded-[24px] overflow-hidden shadow-2xl shadow-brand-primary/20">
-            
-            <!-- Header Plataforma -->
-            <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between shadow-sm shrink-0 z-20 relative">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-brand-primary rounded-lg flex items-center justify-center text-white shadow-inner">
-                        <i class="ph-fill ph-ice-cream text-lg"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="text-gray-900 font-black tracking-tight text-[14px] leading-tight">Lovable Members</span>
-                        <span class="text-gray-400 text-[10px] font-bold uppercase">Mari Confeiteira</span>
-                    </div>
-                </div>
-                <div class="text-[10px] font-black bg-red-100 text-red-600 px-2 py-1 rounded tracking-widest border border-red-200 animate-pulse">
-                    VISITANTE
-                </div>
-            </header>
-
-            <!-- Conteúdo Plataforma (Scrollável) -->
-            <div class="flex-1 overflow-y-auto pb-24 text-gray-800">
-                
-                <!-- DESTAQUE MÁXIMO: O Curso de Picolés -->
-                <div class="bg-white px-4 pt-4 pb-6 rounded-b-[24px] shadow-sm relative z-10 border-b border-gray-200">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="bg-orange-100 text-orange-600 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider">Módulo 1</span>
-                        <span class="text-gray-400 text-xs font-semibold">• Curso Principal</span>
-                    </div>
-                    
-                    <h1 class="text-[22px] font-black text-gray-900 leading-tight tracking-tight mb-1">
-                        A Base Perfeita Sem Cristais de Gelo
-                    </h1>
-                    <p class="text-xs text-gray-500 mb-4 font-medium">Domina a arte de fazer picolés artesanais super cremosos e lucrativos.</p>
-
-                    <!-- Player de Vídeo Principal Bloqueado -->
-                    <div class="w-full aspect-video bg-gray-900 rounded-xl overflow-hidden relative shadow-lg locked-item group">
-                        <!-- Thumbnail borrada agora usando arquivo local -->
-                        <img src="picole-grid-1.webp" class="w-full h-full object-cover opacity-70 blur-[3px] scale-105" alt="Aula Picolé">
-                        
-                        <!-- Botão Play Falso Atrás do Vidro -->
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-14 h-14 bg-brand-primary/80 rounded-full flex items-center justify-center blur-[1px]">
-                                <i class="ph-fill ph-play text-white text-2xl ml-1"></i>
-                            </div>
-                        </div>
-
-                        <!-- Vidro Fosco + Cadeado (Overlay) -->
-                        <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex flex-col items-center justify-center transition-all group-active:bg-red-900/50">
-                            <div class="w-14 h-14 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center mb-2 border border-white/20 shadow-xl">
-                                <i class="ph-fill ph-lock-key text-white text-3xl"></i>
-                            </div>
-                            <span class="text-white font-black text-sm tracking-wide drop-shadow-md">AULA BLOQUEADA</span>
-                        </div>
-                        
-                        <!-- Barra de progresso fake -->
-                        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gray-700">
-                            <div class="h-full bg-brand-primary w-[0%]"></div>
-                        </div>
-                    </div>
-
-                    <!-- DESTAQUE DA APOSTILA COMPLETA -->
-                    <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mt-6 mb-2">Material do Módulo</h2>
-                    <div class="bg-gradient-to-r from-red-50 to-pink-50 border border-red-100 rounded-xl p-3 flex items-center justify-between shadow-sm relative overflow-hidden locked-item group">
-                        <!-- Ícone de fundo gigante para textura -->
-                        <div class="absolute -right-4 -top-4 opacity-5 group-active:animate-shake transition-all duration-300 group-active:opacity-20 text-red-600">
-                            <i class="ph-fill ph-file-pdf text-[100px]"></i>
-                        </div>
-                        
-                        <div class="flex items-center gap-3 relative z-10">
-                            <div class="w-11 h-11 bg-red-500 rounded-lg flex items-center justify-center text-white shadow-md">
-                                <i class="ph-bold ph-file-pdf text-2xl"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-black text-gray-900 text-[15px] leading-tight">Apostila Completa</h3>
-                                <p class="text-[10px] text-red-500 font-bold uppercase mt-0.5">15 Sabores + Ficha Técnica</p>
-                            </div>
-                        </div>
-                        <div class="relative z-10 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-200 text-gray-400 group-active:text-red-500 group-active:bg-red-50 transition-colors">
-                            <i class="ph-bold ph-lock-key text-sm"></i>
-                        </div>
-                    </div>
-
-                    <!-- GALERIA DE PRÓXIMAS AULAS BLOQUEADAS -->
-                    <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mt-6 mb-2">Próximas Aulas (Bloqueadas)</h2>
-                    <div class="grid grid-cols-2 gap-3">
-                        <!-- Aula 2 -->
-                        <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="picole-grid-2.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
-                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
-                                <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
-                                    <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
-                                </div>
-                                <span class="text-white text-[9px] font-bold tracking-wider">AULA 2</span>
-                            </div>
-                        </div>
-                        <!-- Aula 3 -->
-                        <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="picole-grid-3.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
-                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
-                                <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
-                                    <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
-                                </div>
-                                <span class="text-white text-[9px] font-bold tracking-wider">AULA 3</span>
-                            </div>
-                        </div>
-                        <!-- Aula 4 -->
-                        <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="picole-grid-4.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
-                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
-                                <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
-                                    <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
-                                </div>
-                                <span class="text-white text-[9px] font-bold tracking-wider">AULA 4</span>
-                            </div>
-                        </div>
-                        <!-- Aula 5 -->
-                        <div class="relative rounded-xl overflow-hidden shadow-sm aspect-video locked-item group">
-                            <img src="picole-grid-5.webp" class="w-full h-full object-cover opacity-80 blur-[2px] scale-110">
-                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center group-active:bg-red-900/60 transition-colors">
-                                <div class="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 mb-1 shadow-sm">
-                                    <i class="ph-fill ph-lock-key text-white text-[12px]"></i>
-                                </div>
-                                <span class="text-white text-[9px] font-bold tracking-wider">AULA 5</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- OUTROS MÓDULOS (Secundários) -->
-                <div class="px-4 py-5 space-y-3">
-                    <h2 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1 ml-1">Outros Módulos</h2>
-
-                    <!-- Sorvete em Casa -->
-                    <div class="bg-gradient-to-r from-pink-400 to-cyan-400 rounded-2xl p-4 shadow-sm text-white relative locked-item overflow-hidden">
-                        <div class="absolute -right-4 -top-4 opacity-20">
-                            <i class="ph-fill ph-ice-cream text-6xl"></i>
-                        </div>
-                        <h3 class="text-[15px] font-black flex items-center gap-2 mb-1">
-                            🍨 SORVETE EM CASA
-                        </h3>
-                        <p class="text-[10px] text-white/90 mb-3 leading-tight max-w-[80%]">Receitas incríveis de sorvetes deliciosos no conforto da tua casa.</p>
-                        <div class="flex gap-2">
-                            <span class="bg-white/20 px-2 py-1 rounded text-[9px] font-bold border border-white/30"><i class="ph-fill ph-video-camera"></i> 5 Aulas</span>
-                            <span class="bg-white/20 px-2 py-1 rounded text-[9px] font-bold border border-white/30"><i class="ph-fill ph-book-bookmark"></i> E-book PDF</span>
-                        </div>
-                    </div>
-
-                    <!-- Calculadora -->
-                    <div class="bg-[#107c64] rounded-2xl p-4 shadow-sm text-white flex items-center justify-between locked-item">
-                        <div>
-                            <h3 class="text-[14px] font-black flex items-center gap-1">
-                                <i class="ph-fill ph-calculator"></i> Precificação Inteligente
-                            </h3>
-                            <p class="text-[10px] text-white/80 mt-0.5">Calculadora de Lucro Automática</p>
-                        </div>
-                        <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                            <i class="ph-fill ph-lock-key text-white text-sm"></i>
-                        </div>
-                    </div>
-
-                    <!-- Bônus Laranja -->
-                    <div class="bg-gradient-to-r from-orange-400 to-[#f39c12] rounded-2xl p-4 shadow-sm text-white locked-item">
-                        <h3 class="text-[13px] font-black flex items-center gap-1 mb-2">
-                            🎁 BÔNUS EXCLUSIVOS
-                        </h3>
-                        <div class="flex gap-2">
-                            <div class="bg-white/10 rounded-lg p-2 flex-1 border border-white/20 flex flex-col items-center">
-                                <i class="ph-fill ph-images text-xl mb-1"></i>
-                                <span class="text-[9px] font-bold text-center leading-tight">Pack Canva<br>Artes</span>
-                            </div>
-                            <div class="bg-white/10 rounded-lg p-2 flex-1 border border-white/20 flex flex-col items-center">
-                                <i class="ph-fill ph-whatsapp-logo text-xl mb-1"></i>
-                                <span class="text-[9px] font-bold text-center leading-tight">Script de<br>Vendas</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Botão Fixo Embaixo para Voltar ao Chat -->
-            <div class="absolute bottom-0 inset-x-0 p-4 bg-white border-t border-gray-100 z-20">
-                <button id="btn-close-modal" class="w-full bg-[#00a884] hover:bg-[#008f6f] text-white font-black py-4 rounded-xl shadow-[0_4px_14px_0_rgba(0,168,132,0.39)] flex justify-center items-center gap-2 transition-transform active:scale-95 text-[15px]">
-                    <i class="ph-bold ph-whatsapp text-xl"></i> VOLTAR PARA O WHATSAPP
-                </button>
-            </div>
-        </div>
-    </div>
-
+<body class="bg-wa-bg text-wa-text h-[100dvh] flex flex-col overflow-hidden select-none relative w-full mx-auto">
 
     <!-- HEADER DO WHATSAPP -->
-    <header class="bg-wa-header h-[60px] px-3 flex items-center justify-between shrink-0 z-20">
-        <div class="flex items-center gap-3 cursor-pointer">
-            <i class="ph-bold ph-arrow-left text-xl text-wa-text"></i>
-            <img src="picole-hero.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
-            <div class="flex flex-col justify-center">
-                <div class="flex items-center gap-1 leading-tight">
-                    <span class="font-semibold text-wa-text text-[16px]">Mari Confeiteira</span>
-                    <i class="ph-fill ph-seal-check text-[#53bdeb] text-[15px]"></i>
+    <header class="bg-wa-header h-[60px] px-3 flex items-center justify-between shrink-0 z-20 w-full shadow-sm">
+        <div class="flex items-center gap-3 cursor-pointer max-w-3xl mx-auto w-full">
+            <div class="flex items-center gap-3 flex-1">
+                <i class="ph-bold ph-arrow-left text-xl text-wa-text"></i>
+                <img src="picole-hero.webp" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                <div class="flex flex-col justify-center">
+                    <div class="flex items-center gap-1 leading-tight">
+                        <span class="font-semibold text-wa-text text-[16px]">Mari Confeiteira</span>
+                        <i class="ph-fill ph-seal-check text-[#53bdeb] text-[15px]"></i>
+                    </div>
+                    <span id="header-status" class="text-[13px] text-wa-textMuted leading-tight transition-colors">online</span>
                 </div>
-                <span id="header-status" class="text-[13px] text-wa-textMuted leading-tight transition-colors">
-                    online
-                </span>
             </div>
-        </div>
-        <div class="flex items-center gap-6 text-wa-text text-xl pr-2">
-            <i class="ph ph-video-camera cursor-pointer"></i>
-            <i class="ph ph-phone cursor-pointer"></i>
-            <i class="ph ph-dots-three-vertical cursor-pointer"></i>
+            <div class="flex items-center gap-6 text-wa-text text-xl pr-2 shrink-0">
+                <i class="ph ph-video-camera cursor-pointer hidden sm:block"></i>
+                <i class="ph ph-phone cursor-pointer"></i>
+                <i class="ph ph-dots-three-vertical cursor-pointer"></i>
+            </div>
         </div>
     </header>
 
-    <!-- CHAT CONTAINER -->
+    <!-- CHAT CONTAINER DINÂMICO -->
     <main id="chat-container" class="flex-1 relative overflow-y-auto w-full bg-chat-pattern scroll-smooth">
-        <div class="max-w-3xl mx-auto px-4 py-3 flex flex-col gap-1.5 pb-20" id="chat-canvas">
-            
-            <div class="flex justify-center my-2">
-                <div class="bg-wa-sysBg text-wa-sysText text-[12.5px] px-3 py-1.5 rounded-[10px] flex items-center gap-2 max-w-[90%] text-center">
-                    <i class="ph-fill ph-info text-wa-textMuted"></i> Esta é uma conta comercial
-                </div>
-            </div>
-
-            <!-- PARTE 1: AS PRIMEIRAS MENSAGENS -->
-            <div class="flow-item w-full mt-1" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span>Olá, tudo bem? Eu me chamo Mari... 🌟</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span>Fico muito feliz que você tenha interesse no meu material de Picolés Gourmet. 🍦</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Você está diante da oportunidade de aprender receitas super cremosas, com casquinhas perfeitas, que vendem igual água e dão muito lucro! 💰</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Para mostrar nossa <strong>confiança</strong> e <strong>compromisso</strong>, eu vou te mostrar tudo que você vai receber antes mesmo de fazer o pagamento.</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span>O que você acha? Pode ser? ❤️</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- GATILHO 1: TRAVA PARA VER O CONTEÚDO -->
-            <div id="trigger-1" class="hidden w-full flex justify-end mt-4 mb-2">
-                <button class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center gap-2 transform transition active:scale-95 animate-pulse">
-                    <span>Sim, eu quero Mari! 🍦</span>
-                    <i class="ph-bold ph-paper-plane-right text-lg"></i>
-                </button>
-            </div>
-
-            <div class="flow-item w-full mt-2 justify-end" data-sender="user" data-wait-for="trigger-1">
-                <div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[70%] relative pb-6 shadow-sm">
-                    <span>Sim, eu quero Mari! 🍦</span>
-                    <div class="absolute bottom-1 right-2 flex items-center gap-1">
-                        <span class="text-[11px] text-wa-textMuted">19:43</span>
-                        <i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MENSAGEM DO BOT COM BOTÃO DE ACESSO À PLATAFORMA -->
-            <div class="flow-item w-full mt-3" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span>Ótimo! Para provar a qualidade do material, eu liberei um <strong>Acesso de Visitante</strong> pra você na nossa área de alunos exclusiva. 😍👇</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
+        <div class="max-w-[700px] mx-auto px-3 py-3 flex flex-col gap-1.5 pb-24 relative" id="chat-canvas">
+            <div class="flex justify-center my-2 animate-fade">
+                <div class="bg-wa-sysBg text-wa-sysText text-[12px] px-3 py-1.5 rounded-[10px] flex items-center gap-2 max-w-[90%] text-center">
+                    <i class="ph-fill ph-lock-key text-wa-textMuted"></i> As mensagens são protegidas com a criptografia de ponta a ponta.
                 </div>
             </div>
             
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Clique no botão azul aqui embaixo pra dar uma espiadinha de como é lá dentro (os vídeos e arquivos estão com um cadeado 🔒 por enquanto, tá?).<br><br>Quando terminar de olhar, é só apertar no botão de voltar pra gente conversar!</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- BOTÃO GATILHO ESPECIAL: ABRIR MODAL -->
-            <div id="trigger-modal" class="hidden w-full flex justify-end mt-2 mb-2">
-                <button class="bg-[#107c64] hover:bg-[#0d6e58] text-white font-bold py-3.5 px-6 rounded-xl shadow-lg flex items-center gap-2 transform transition active:scale-95 w-full max-w-[300px] justify-center">
-                    <i class="ph-bold ph-monitor-play text-xl"></i>
-                    <span>Acessar Plataforma 👀</span>
-                </button>
-            </div>
-
-            <!-- A MENSAGEM DO USUÁRIO QUE SERÁ ENVIADA AUTOMATICAMENTE AO VOLTAR DO MODAL -->
-            <div class="flow-item w-full mt-2 justify-end" data-sender="user" data-wait-for="trigger-modal">
-                <div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[70%] relative pb-6 shadow-sm">
-                    <span>Nossa, acabei de ver! Amei a plataforma 😍</span>
-                    <div class="absolute bottom-1 right-2 flex items-center gap-1">
-                        <span class="text-[11px] text-wa-textMuted">19:43</span>
-                        <i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RETOMADA DO FUNIL COM AS FOTOS -->
-            <div class="flow-item w-full mt-3" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span>Viu só que incrível? E além de tudo organizado daquele jeito, olha só os picolés reais que você vai aprender a fazer: 👇</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- O GRID DE IMAGENS -->
-            <div class="flow-item w-full mt-1" data-sender="bot" data-is-file="true">
-                <div class="bg-wa-msgIn p-1 bubble bubble-in w-full max-w-[300px] relative pb-5 shadow-sm">
-                    <!-- Grid estilo Álbum com imagens locais -->
-                    <div class="grid grid-cols-2 gap-[2px] w-full rounded-lg overflow-hidden bg-black/20">
-                        <img src="picole-grid-1.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="picole-grid-2.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="picole-grid-3.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="picole-grid-4.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="picole-grid-5.webp" class="grid-img w-full h-28 object-cover">
-                        <img src="picole-grid-6.webp" class="grid-img w-full h-28 object-cover">
-                    </div>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- LISTA DE ENTREGÁVEIS -->
-            <div class="flow-item w-full mt-1" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[22px]">
-                        Revisando tudo que você vai receber lá dentro do <strong>Método Picolé Lucrativo</strong>:<br><br>
-                        ✅ Vídeo Aulas em Alta Resolução (Passo a passo prático)<br>
-                        ✅ O Segredo do <strong>Recheio Trufado</strong> e Casquinha Crocante<br>
-                        ✅ Cardápio Enxuto: <strong>15 Sabores Campeões</strong> de Venda<br>
-                        ✅ Técnica de Armazenamento para não perder estoque<br>
-                        ✅ Roteiro de Vendas: Como esgotar seu estoque em 24 horas<br>
-                        ✅ Script Copia e Cola para vender muito no WhatsApp<br>
-                        ✅ Calculadora Automática: Saiba o centavo exato do seu lucro<br>
-                        ✅ Acesso Vitalício + Suporte VIP direto comigo<br>
-                        ✅ Lindo Certificado de Conclusão Oficial
-                    </span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- OS BÔNUS -->
-            <div class="flow-item w-full mt-3" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">E não para por aí... Garantindo sua vaga hoje, eu vou liberar <strong>R$ 153,00 em Bônus Exclusivos</strong> 100% de graça pra você: 🎁</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">
-                        ⭐ <strong>BÔNUS 1: Pack Canva (Cardápios & Artes)</strong><br>
-                        Templates prontos e profissionais para você colocar seu preço e postar no Instagram. Pareça uma marca gigante desde o seu primeiro dia de vendas.
-                    </span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">
-                        ⭐ <strong>BÔNUS 2: Script de Vendas p/ WhatsApp</strong><br>
-                        O texto persuasivo exato para mandar nos grupos do condomínio, família e clientes. É só copiar, colar e ver os pedidos chegando.
-                    </span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full mt-1" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Você está pronta para transformar o seu freezer em uma <strong>Fábrica de Dinheiro</strong>? 💸</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- GATILHO 3: TRAVA PARA O PREÇO -->
-            <div id="trigger-2" class="hidden w-full flex justify-end mt-4 mb-2">
-                <button class="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold py-3 px-6 rounded-full shadow-lg flex items-center gap-2 transform transition active:scale-95 animate-pulse">
-                    <span>Não vejo a hora de começar! 😍</span>
-                    <i class="ph-bold ph-heart text-lg"></i>
-                </button>
-            </div>
-
-            <div class="flow-item w-full mt-2 justify-end" data-sender="user" data-wait-for="trigger-2">
-                <div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[70%] relative pb-6 shadow-sm">
-                    <span>Não vejo a hora de começar! 😍</span>
-                    <div class="absolute bottom-1 right-2 flex items-center gap-1">
-                        <span class="text-[11px] text-wa-textMuted">19:43</span>
-                        <i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PARTE 3: FECHAMENTO / PREÇO (Após Gatilho 3) -->
-            <div class="flow-item w-full mt-3" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Para facilitar, eu preparei duas opções pra você escolher a que melhor cabe no seu bolso hoje: 👇</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[22px]">
-                        🌟 <strong>OPÇÃO 1: PACOTE COMPLETO (Recomendado)</strong><br><br>
-                        Você leva as Vídeo Aulas + O E-book Completo com os 15 sabores + Calculadora + Suporte VIP + Certificado + <strong>Todos os Bônus</strong> (Pack Canva e Script de Vendas).<br><br>
-                        💰 Por apenas <strong>R$ 37,00</strong>.
-                    </span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[22px]">
-                        📦 <strong>OPÇÃO 2: APENAS O BÁSICO</strong><br><br>
-                        Você leva <strong>somente</strong> o E-book com as receitas em texto. (Fica de fora as vídeo aulas, o suporte, o certificado e os bônus).<br><br>
-                        💰 Por <strong>R$ 17,00</strong>.
-                    </span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <div class="flow-item w-full" data-sender="bot">
-                <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[70%] relative pb-6">
-                    <span class="block leading-[20px]">Qual das duas opções faz mais sentido para você agora? É só clicar em um dos botões abaixo:</span>
-                    <span class="text-[11px] text-wa-textMuted absolute bottom-1 right-2">19:43</span>
-                </div>
-            </div>
-
-            <!-- BOTÕES EXTERNOS DE PAGAMENTO -->
-            <div class="flow-item w-full mt-2 justify-end" data-sender="system">
-                <a href="https://confeiteira-mari.pay.yampi.com.br/r/K8MZLO5HWH" class="bg-wa-msgIn text-[#00a884] text-[15px] font-bold px-4 py-3.5 bubble bubble-out flex items-center justify-center gap-2 max-w-[300px] w-full transition active:bg-[#2a3942] border border-[#00a884]/30 relative overflow-hidden group shadow-md">
-                    <div class="absolute inset-0 bg-[#00a884]/10 group-hover:bg-[#00a884]/20 transition"></div>
-                    <i class="ph-fill ph-star text-lg text-[#FDE047]"></i> 
-                    Quero o Completo (R$ 37)
-                </a>
-            </div>
-            
-            <div class="flow-item w-full justify-end mt-1" data-sender="system">
-                <button id="btn-17-option" class="bg-wa-msgIn text-wa-text text-[14px] font-medium px-4 py-3 bubble flex items-center justify-center gap-2 max-w-[300px] w-full transition active:bg-[#2a3942] opacity-80">
-                    Apenas E-book Básico (R$ 17)
-                </button>
-            </div>
-
-            <!-- INDICADOR DE DIGITAÇÃO -->
-            <div id="typing-indicator" class="hidden w-full mt-1">
-                <div class="bg-wa-msgIn px-4 py-3 bubble bubble-in w-fit flex items-center gap-1.5 shadow-sm">
+            <!-- INDICADOR DE DIGITAÇÃO NO FLUXO -->
+            <div id="typing-indicator" class="hidden w-full flex justify-start mt-1">
+                <div class="bg-wa-msgIn px-4 py-3 bubble bubble-in w-fit flex items-center gap-1.5 shadow-md">
                     <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0s"></div>
                     <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.2s"></div>
                     <div class="w-1.5 h-1.5 bg-wa-textMuted rounded-full animate-typing-dot" style="animation-delay: 0.4s"></div>
                 </div>
             </div>
 
-            <div id="scroll-anchor" class="h-1"></div>
         </div>
     </main>
 
-    <!-- FOOTER / INPUT -->
-    <footer class="w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-transparent">
-        <div class="w-full max-w-3xl bg-wa-header rounded-full flex items-center px-4 py-3 shadow-md">
-            <i class="ph ph-plus text-[26px] text-wa-textMuted cursor-pointer mr-3 hover:text-white transition-colors"></i>
-            <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3 hover:text-white transition-colors"></i>
-            <input type="text" placeholder="Digite uma mensagem" class="bg-transparent text-wa-text w-full outline-none text-[16px] placeholder:text-wa-textMuted cursor-default" readonly>
+    <!-- FOOTER: FAKE INPUT -->
+    <footer id="footer-fake" class="w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a]/90 backdrop-blur-sm transition-all">
+        <div class="w-full max-w-[700px] bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-sm">
+            <i class="ph ph-plus text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+            <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+            <div class="text-wa-textMuted w-full outline-none text-[16px] cursor-default">Digite uma mensagem</div>
+            <i class="ph-fill ph-microphone text-[24px] text-wa-textMuted ml-3 cursor-pointer"></i>
         </div>
     </footer>
 
-    <!-- ENGINE JAVASCRIPT: Lógica de Exibição Dinâmica -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const headerStatus = document.getElementById("header-status");
-            const typingIndicator = document.getElementById("typing-indicator");
-            const scrollAnchor = document.getElementById("scroll-anchor");
-            const flowItems = document.querySelectorAll('.flow-item');
-            
-            // Controle da Área de Membros
-            const modal = document.getElementById("members-area-modal");
-            const modalCloseBtn = document.getElementById("btn-close-modal");
-            const lockedItems = document.querySelectorAll('.locked-item');
-            const lockedToast = document.getElementById("locked-toast");
-            
-            // Controle do Modal de Upsell
-            const btn17 = document.getElementById("btn-17-option");
-            const upsellModal = document.getElementById("upsell-modal");
-            const upsellContent = document.getElementById("upsell-content");
-            const btnRefuseUpsell = document.getElementById("btn-refuse-upsell");
-            
-            // Lógica do Modal Upsell
-            if (btn17) {
-                btn17.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    upsellModal.classList.remove('hidden');
-                    // Pequeno delay para transição do Tailwind funcionar
-                    setTimeout(() => {
-                        upsellModal.classList.add('opacity-100', 'open');
-                        upsellContent.classList.remove('scale-95');
-                        upsellContent.classList.add('scale-100');
-                    }, 10);
-                });
-            }
-            
-            if (btnRefuseUpsell) {
-                btnRefuseUpsell.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    // Muda o texto para dar feedback ao usuário e redireciona para R$ 17
-                    btnRefuseUpsell.innerText = 'Redirecionando...';
-                    window.location.href = 'https://confeiteira-mari.pay.yampi.com.br/r/RWW6PZI16L';
-                });
-            }
+    <!-- FOOTER: INPUT REAL (Captura de Nome) -->
+    <footer id="footer-real" class="hidden w-full px-2 py-3 shrink-0 z-20 flex justify-center bg-[#0b141a] transition-all">
+        <div class="w-full max-w-[700px] flex items-center gap-2">
+            <div class="flex-1 bg-wa-header rounded-full flex items-center px-4 py-2.5 shadow-md">
+                <i class="ph ph-smiley text-[26px] text-wa-textMuted cursor-pointer mr-3"></i>
+                <input type="text" id="user-name-input" placeholder="Qual o seu nome?" class="bg-transparent text-wa-text w-full outline-none text-[16px] placeholder:text-wa-textMuted" autocomplete="off">
+            </div>
+            <div id="btn-send-name" class="w-[46px] h-[46px] rounded-full bg-[#00a884] flex items-center justify-center cursor-pointer shrink-0 shadow-md transform active:scale-95 transition-transform">
+                <i class="ph-fill ph-paper-plane-right text-white text-xl ml-1"></i>
+            </div>
+        </div>
+    </footer>
 
-            // Interação de "Bloqueado" no Modal
-            lockedItems.forEach(item => {
-                item.addEventListener('click', () => {
-                    // Reinicia a animação do toast se já estiver rodando
-                    lockedToast.classList.remove('hidden', 'animate-toast');
-                    void lockedToast.offsetWidth; // trigger reflow
-                    lockedToast.classList.add('animate-toast');
-                });
-            });
+    <!-- SEU ÁUDIO (Coloque o arquivo MP3 aqui com o nome exato) -->
+    <audio id="vsl-audio" src="SEU-AUDIO-AQUI.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const chatCanvas = document.getElementById("chat-canvas");
+            const typingIndicator = document.getElementById("typing-indicator");
+            const headerStatus = document.getElementById("header-status");
+            const footerFake = document.getElementById("footer-fake");
+            const footerReal = document.getElementById("footer-real");
+            const nameInput = document.getElementById("user-name-input");
+            const btnSendName = document.getElementById("btn-send-name");
+
+            let userData = { name: "Amiga", city: "sua cidade" };
+
+            // Geolocalização Silenciosa
+            fetch('https://ipapi.co/json/')
+                .then(response => response.json())
+                .then(data => { if(data.city) userData.city = data.city; })
+                .catch(e => console.log("Geolocalização silenciosa falhou."));
+
+            const sleep = ms => new Promise(r => setTimeout(r, ms));
             
             const scrollToBottom = () => {
-                requestAnimationFrame(() => {
-                    scrollAnchor.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                const container = document.getElementById("chat-container");
+                container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+            };
+
+            const setTyping = (isTyping) => {
+                if(isTyping) {
+                    typingIndicator.classList.remove("hidden");
+                    headerStatus.innerHTML = '<span class="text-[#00a884]">digitando...</span>';
+                } else {
+                    typingIndicator.classList.add("hidden");
+                    headerStatus.innerText = "online";
+                }
+                scrollToBottom();
+            };
+
+            const addBotMessage = async (htmlContent, delayMs = 2000) => {
+                setTyping(true);
+                await sleep(delayMs);
+                setTyping(false);
+                
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-1 flex justify-start";
+                div.innerHTML = `
+                    <div class="bg-wa-msgIn text-[15px] px-2.5 py-1.5 bubble bubble-in max-w-[85%] sm:max-w-[75%] relative pb-6 text-wa-text shadow-sm">
+                        <span class="block leading-[20px]">${htmlContent}</span>
+                        <span class="text-[10px] text-wa-textMuted absolute bottom-1 right-2">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+                return div; 
+            };
+
+            const addUserMessage = (text) => {
+                const div = document.createElement("div");
+                div.className = "w-full flex justify-end animate-pop-in mt-2 mb-1";
+                div.innerHTML = `
+                    <div class="bg-wa-msgOut text-[15px] px-2.5 py-1.5 bubble bubble-out max-w-[85%] sm:max-w-[75%] relative pb-6 shadow-sm">
+                        <span class="block leading-[20px] text-wa-text font-medium">${text}</span>
+                        <div class="absolute bottom-1 right-2 flex items-center gap-1">
+                            <span class="text-[10px] text-wa-textMuted/80">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                            <i class="ph-bold ph-checks text-[#53bdeb] text-[14px]"></i>
+                        </div>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+            };
+
+            const showInlineButtons = (options) => {
+                const containerId = "opts-" + Date.now();
+                const div = document.createElement("div");
+                div.id = containerId;
+                div.className = "w-full flex flex-col items-end gap-2 mt-3 animate-slide-up mb-3 pr-1";
+                
+                options.forEach(opt => {
+                    const btn = document.createElement("div");
+                    btn.className = "inline-btn max-w-[85%] sm:max-w-[75%]";
+                    btn.innerHTML = `<span>${opt.text}</span>`;
+                    
+                    btn.addEventListener("click", () => {
+                        document.getElementById(containerId).remove();
+                        addUserMessage(opt.text);
+                        opt.action();
+                    });
+                    
+                    div.appendChild(btn);
+                });
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+            };
+
+            // ==========================================
+            // FLUXO DO FUNIL - MULHER PARA MULHER (PT-BR)
+            // ==========================================
+
+            const runPhase1 = async () => {
+                await addBotMessage("Amiga, descobri uma verdadeira mina de ouro pra faturar alto sem sair da cozinha. 🍦", 1200);
+                await addBotMessage("Se você tem um congelador comum em casa, eu vou te provar como é possível lucrar até <b>R$ 3.240 por mês</b> vendendo Picolé Trufado Artesanal.", 3500);
+                await addBotMessage("Mas deixa eu te contar um segredo... tem donas de casa e confeiteiras fazendo MUITO MAIS QUE ISSO todos os meses! 🚨", 4000);
+                await addBotMessage("Mas me conta uma coisa... Qual é o seu <b>PRINCIPAL OBJETIVO</b> hoje?", 2500);
+
+                showInlineButtons([
+                    { text: "Fazer meus primeiros R$ 300! 🔥", action: () => runPhase2() },
+                    { text: "Renda extra todo o mês 💸", action: () => runPhase2() },
+                    { text: "Criar meu negócio do zero 😍", action: () => runPhase2() }
+                ]);
+            };
+
+            const runPhase2 = async () => {
+                await addBotMessage("Que maravilha! 🥰 Mas deixa eu te fazer uma perguntinha...", 2000);
+                await addBotMessage("Pra eu te mostrar o caminho certinho e não te passar informação à toa... Qual o seu nível de experiência com doces?", 3500);
+                
+                showInlineButtons([
+                    { text: "Já faço e vendo 🏆", action: () => runPhase3() },
+                    { text: "Zero, quero aprender! 🤔", action: () => runPhase3() }
+                ]);
+            };
+
+            const runPhase3 = async () => {
+                await addBotMessage("Perfeita! Vamos <b>DESTRAVAR</b> sua cozinha pra que você tenha lucro de verdade todos os dias.", 3000);
+                await addBotMessage("E antes de te mostrar como fazer sua primeira <b>produção</b> em MENOS DE 24 HORAS, ouve esse áudio rapidinho:", 3500);
+                
+                renderAudioPlayer();
+                
+                // 🛑 A ESTRATÉGIA DO SILÊNCIO TÁTICO 🛑
+                // O bot não fala nada por exatos 30 segundos (novo tempo do seu áudio).
+                // Isso cria o Bloqueio Psicológico. A lead sente que a Mari está esperando ela ouvir.
+                await sleep(30000);
+                
+                await addBotMessage("Posso te mandar umas fotos mostrando na prática a lindeza que eles ficam?", 3000);
+
+                showInlineButtons([
+                    { text: "Nossa, sim, por favor! 🔥", action: () => runPhase4() }
+                ]);
+            };
+
+            const runPhase4 = async () => {
+                setTyping(true);
+                await sleep(2500);
+                setTyping(false);
+
+                // Grid idêntico ao Template 1 (Landing Page), com gap-3, cantos bem arredondados (2xl) e imagens grandes
+                const gridHtml = `
+                    <div class="grid grid-cols-2 gap-3 w-full max-w-[340px]">
+                        <img src="picole-grid-1.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-2.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-3.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-4.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-5.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                        <img src="picole-grid-6.webp" class="w-full h-40 sm:h-44 object-cover rounded-2xl shadow-md border border-white/10">
+                    </div>`;
+                
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
+                // Injetado SEM o fundo do balão de mensagem para a galeria brilhar e impactar visualmente
+                div.innerHTML = `
+                    <div class="relative max-w-[90%] sm:max-w-[85%]">
+                        ${gridHtml}
+                        <span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+
+                await addBotMessage("Esses são os picolés com casquinha de chocolate fininha e recheio trufado... eles vendem sozinhos de tão lindos! 🤤", 3500);
+                await addBotMessage("Pra eu te explicar como você vai fazer essa maravilha aí na sua casa, como posso te chamar? (Digita seu nome abaixo) 👇", 3000);
+                
+                footerFake.classList.add('hidden');
+                footerReal.classList.remove('hidden');
+                nameInput.focus();
+            };
+
+            const submitName = () => {
+                const name = nameInput.value.trim();
+                if(name.length < 2) return;
+                
+                userData.name = name;
+                footerReal.classList.add('hidden');
+                footerFake.classList.remove('hidden');
+                addUserMessage(userData.name);
+                runPhase6();
+            };
+            btnSendName.addEventListener('click', submitName);
+            nameInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') submitName(); });
+
+            const runPhase6 = async () => {
+                await addBotMessage(`<b>${userData.name}</b>, muito prazer! ❤️`, 2000);
+                await addBotMessage("Me dá só um segundinho, vou dar uma pesquisada rápida aqui no Google pra ver como tão as vendas de picolés artesanais aí na sua região... 🔍", 4000);
+
+                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Pesquisando no Google...</div>", 2000);
+                
+                await sleep(3500); 
+                const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
+                if (spanToUpdate) {
+                    spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Busca Concluída!</div>`;
+                }
+                
+                await addBotMessage(`Menina, olha que oportunidade! Na região de <b>${userData.city}</b> eu não encontrei quase ninguém vendendo esses picolés gourmet ainda! 😱`, 3500);
+                await addBotMessage("Isso significa que você vai ser uma das primeiras e vai poder aproveitar o mercado livre pra lucrar muito aí! 💸", 3500);
+                await addBotMessage("Mas pra dar certo, você precisa de um pouquinho de dedicação...", 2500);
+                await addBotMessage("Você consegue tirar pelo menos <b>2 horinhas livres</b> uma vez por semana pra produção?", 2500);
+                await addBotMessage("Pode ser dividido em 2 ou 3 dias também, super tranquilo...", 2000);
+
+                showInlineButtons([
+                    { text: "Consigo sim, com certeza! 😄", action: () => runPhase7() },
+                    { text: "Tenho pouco tempo, mas eu tento 😉", action: () => runPhase7() }
+                ]);
+            };
+
+            const runPhase7 = async () => {
+                await addBotMessage(`Ótimo! Então, <b>${userData.name}</b>, vou só dar uma olhadinha no seu perfil com base no que a gente conversou pra ver se posso liberar seu acesso agora. Rapidinho...`, 3500);
+                
+                const loadingMsg = await addBotMessage("<div class='flex items-center gap-2 text-wa-sysText font-semibold'><i class='ph-bold ph-spinner animate-spin text-[#25D366] text-xl'></i> Analisando o perfil...</div>", 2000);
+                
+                await sleep(4000);
+                const spanToUpdate = loadingMsg.querySelector('.bg-wa-msgIn > span');
+                if (spanToUpdate) {
+                    spanToUpdate.innerHTML = `<div class='flex items-center gap-2 text-[#00a884] font-black'><i class='ph-bold ph-check-circle text-2xl'></i> Acesso LIBERADO</div>`;
+                }
+                
+                await addBotMessage("ACESSO LIBERADO COM SUCESSO! 🎉", 2000);
+                
+                await addBotMessage(`Então é isso TUDO que você vai receber hoje: 👇<br><br>✅ <b>Vídeo Aulas em Alta Resolução</b> (Passo a passo prático)<br>✅ O Segredo do <b>Recheio Trufado</b> e Casquinha Crocante<br>✅ Cardápio Enxuto: <b>15 Sabores Campeões</b> de Venda<br>✅ Técnica de Armazenamento pra não perder estoque<br>✅ Roteiro de Vendas: Como esgotar seu estoque em 24h<br>✅ Acesso Vitalício + <b>Suporte VIP</b> direto comigo<br>✅ Lindo <b>Certificado de Conclusão Oficial</b><br><br>E mais os <b>3 BÔNUS:</b><br>🎁 Bônus 1: Pack Canva de Artes Prontas<br>🎁 Bônus 2: Script de Vendas p/ WhatsApp<br>🎁 Bônus 3: Calculadora Automática de Lucro`, 5000);
+                
+                await addBotMessage("Eu e milhares de alunas somos iguais a você, começamos do zero. É só seguir o passo a passo e o método.", 3500);
+                await addBotMessage(`<b>${userData.name}</b>, preparada pra dar esse passo?`, 2500);
+
+                showInlineButtons([
+                    { text: "100% pronta! Quero começar! 🔥", action: () => runPhase8() },
+                    { text: "Ainda tenho algumas dúvidas... 😥", action: () => runPhase8() }
+                ]);
+            };
+
+            const runPhase8 = async () => {
+                await addBotMessage("Eu poderia cobrar facilmente R$ 197,00 pelo Treinamento com todas as aulas...", 3000);
+                await addBotMessage(`Com os <b>3 BÔNUS PRONTOS</b> e todo o material que eu preparei <b>especialmente</b> pra você, ${userData.name}.`, 3500);
+                await addBotMessage("Mas isso seria completamente injusto e eu quero realmente te ajudar...", 2500);
+                await addBotMessage("Também poderia ser GRÁTIS, mas você não daria valor e eu teria perdido meu tempo.", 3500);
+                await addBotMessage("Então, apenas <b>AGORA</b>, vou te dar a CHANCE de ganhar um PRÊMIO NA RASPADINHA 🔥", 3500);
+                await addBotMessage("RASPOU, GANHOU. Simples assim...", 2000);
+                
+                renderScratchCard();
+            };
+
+            // ==========================================
+            // COMPONENTES VISUAIS (Áudio e Raspadinha)
+            // ==========================================
+
+            const renderAudioPlayer = () => {
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-1 flex justify-start";
+                div.innerHTML = `
+                    <div class="bg-wa-msgIn p-2 bubble bubble-in w-[260px] shadow-sm flex items-center gap-3 relative pb-6 text-wa-text">
+                        <img src="picole-hero.webp" class="w-12 h-12 rounded-full object-cover">
+                        <div id="btn-play-audio" class="text-3xl text-wa-textMuted cursor-pointer active:scale-95 transition-transform">
+                            <i class="ph-fill ph-play"></i>
+                        </div>
+                        <div class="flex-1 flex flex-col justify-center gap-1">
+                            <div class="w-full bg-[#3b4a54] h-1.5 rounded-full overflow-hidden relative">
+                                <div id="audio-progress" class="bg-[#00a884] h-full w-0 rounded-full transition-all duration-[200ms] ease-linear"></div>
+                                <div id="audio-thumb" class="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00a884] rounded-full shadow-md" style="left: 0%;"></div>
+                            </div>
+                            <span class="text-[11px] text-wa-textMuted" id="audio-time">0:00</span>
+                        </div>
+                        <span class="text-[10px] text-[#00a884] absolute bottom-1 right-2 flex items-center gap-1">
+                            <i id="mic-icon" class="ph-fill ph-microphone"></i> 0:30
+                        </span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
+
+                const audioEl = document.getElementById("vsl-audio");
+                const playBtn = document.getElementById("btn-play-audio");
+                const progressBar = document.getElementById("audio-progress");
+                const audioThumb = document.getElementById("audio-thumb");
+                const timeDisplay = document.getElementById("audio-time");
+                const micIcon = document.getElementById("mic-icon");
+
+                audioEl.load();
+
+                playBtn.addEventListener("click", () => {
+                    // Efeito do WhatsApp: Microfone fica azul quando tocado
+                    micIcon.classList.remove("text-[#00a884]");
+                    micIcon.classList.add("text-[#53bdeb]");
+
+                    if (audioEl.paused) {
+                        audioEl.play();
+                        playBtn.innerHTML = '<i class="ph-fill ph-pause"></i>';
+                    } else {
+                        audioEl.pause();
+                        playBtn.innerHTML = '<i class="ph-fill ph-play"></i>';
+                    }
+                });
+
+                audioEl.addEventListener("timeupdate", () => {
+                    const percent = (audioEl.currentTime / audioEl.duration) * 100;
+                    progressBar.style.width = `${percent}%`;
+                    audioThumb.style.left = `calc(${percent}% - 6px)`;
+                    let mins = Math.floor(audioEl.currentTime / 60);
+                    let secs = Math.floor(audioEl.currentTime % 60);
+                    timeDisplay.innerText = `${mins}:${secs < 10 ? '0'+secs : secs}`;
+                });
+
+                audioEl.addEventListener("ended", () => {
+                    playBtn.innerHTML = '<i class="ph-fill ph-play"></i>';
+                    progressBar.style.width = `0%`;
+                    audioThumb.style.left = `0%`;
+                    timeDisplay.innerText = "0:00";
                 });
             };
 
-            const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-            async function playSimulation() {
-                await sleep(500);
+            const renderScratchCard = () => {
+                const div = document.createElement("div");
+                div.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start pl-1";
+                div.innerHTML = `
+                    <div class="scratch-container shadow-2xl relative">
+                        <div class="scratch-base">
+                            <span class="text-2xl mb-1">🎉</span>
+                            <h3 class="text-[12px] font-bold text-green-100 uppercase tracking-widest mb-1">PARABÉNS!</h3>
+                            <p class="text-[15px] font-black leading-tight drop-shadow-md">Você ganhou R$ 160,00 de DESCONTO</p>
+                        </div>
+                        <canvas id="scratch-canvas"></canvas>
+                    </div>`;
                 
-                let hasPassedFirstTrigger = false;
+                chatCanvas.insertBefore(div, typingIndicator);
+                scrollToBottom();
 
-                for (let i = 0; i < flowItems.length; i++) {
-                    const item = flowItems[i];
-                    const sender = item.dataset.sender;
-                    const waitForId = item.dataset.waitFor; 
+                initScratchLogic();
+            };
 
-                    // INTERATIVIDADE (Triggers do WhatsApp e Modal)
-                    if (sender === 'user' && waitForId) {
-                        
-                        if (waitForId === 'trigger-1') hasPassedFirstTrigger = true;
-                        
-                        const triggerBox = document.getElementById(waitForId);
-                        
-                        // O Gatilho 2 agora é o botão da plataforma
-                        if (waitForId === 'trigger-modal') {
-                            triggerBox.classList.remove('hidden');
-                            triggerBox.classList.add('flex');
-                            scrollToBottom();
+            const initScratchLogic = () => {
+                const canvas = document.getElementById("scratch-canvas");
+                const ctx = canvas.getContext("2d");
+                let isDrawing = false;
+                let isCleared = false;
 
-                            await new Promise(resolve => {
-                                const btnOpen = triggerBox.querySelector('button');
-                                
-                                // Abre o Modal
-                                btnOpen.addEventListener('click', () => {
-                                    modal.classList.remove('hidden');
-                                    setTimeout(() => modal.classList.add('open', 'opacity-100'), 10);
-                                });
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
 
-                                // Fecha o modal e destrava o fluxo
-                                modalCloseBtn.addEventListener('click', () => {
-                                    modal.classList.remove('opacity-100');
-                                    setTimeout(() => {
-                                        modal.classList.add('hidden');
-                                        modal.classList.remove('open');
-                                        triggerBox.classList.add('hidden');
-                                        triggerBox.classList.remove('flex');
-                                        resolve();
-                                    }, 300); // tempo do fade out
-                                });
-                            });
-                        } else {
-                            // Gatilhos Normais do Chat (Botões Verdes)
-                            triggerBox.classList.remove('hidden');
-                            triggerBox.classList.add('flex');
-                            scrollToBottom();
+                ctx.fillStyle = "#fbbf24"; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.font = "900 18px Arial";
+                ctx.fillStyle = "#78350f"; 
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("RASPE E GANHE NA HORA!", canvas.width / 2, canvas.height / 2);
 
-                            await new Promise(resolve => {
-                                const btn = triggerBox.querySelector('button');
-                                btn.addEventListener('click', () => {
-                                    triggerBox.classList.add('hidden');
-                                    triggerBox.classList.remove('flex');
-                                    resolve();
-                                }, { once: true });
-                            });
-                        }
+                ctx.globalCompositeOperation = "destination-out";
 
-                        // Dispara a mensagem do usuário (ecoando o clique ou voltando do modal)
-                        item.style.display = 'flex';
-                        setTimeout(() => item.classList.add('show'), 10);
-                        scrollToBottom();
-                        
-                        await sleep(1000); 
-                        continue; 
+                const getMousePos = (canvas, evt) => {
+                    const rect = canvas.getBoundingClientRect();
+                    let clientX = evt.clientX;
+                    let clientY = evt.clientY;
+                    if(evt.touches && evt.touches.length > 0) {
+                        clientX = evt.touches[0].clientX;
+                        clientY = evt.touches[0].clientY;
                     }
+                    return {
+                        x: (clientX - rect.left) * (canvas.width / rect.width),
+                        y: (clientY - rect.top) * (canvas.height / rect.height)
+                    };
+                };
 
-                    // AÇÃO DO BOT
-                    if (sender === 'bot') {
-                        headerStatus.innerHTML = `<span class="text-[#00a884]">digitando...</span>`;
-                        typingIndicator.classList.remove('hidden');
-                        typingIndicator.classList.add('flex');
-                        scrollToBottom();
-
-                        const isFile = item.dataset.isFile === 'true';
-                        
-                        // Cálculo de delay estratégico
-                        let delay = 3000;
-                        if (!hasPassedFirstTrigger) {
-                            delay = 1200; // Ritmo acelerado (1.2s) na fase de gancho
-                        } else if (isFile) {
-                            delay = 1500; // Arquivos e imagens enviam mais rápido
-                        } else {
-                            // Fase de ancoragem de valor: tempo calculado pelo tamanho do texto
-                            const textLength = item.textContent.trim().length;
-                            delay = 1000 + (textLength * 35); 
-                            delay = Math.max(2500, Math.min(delay, 6500));
-                        }
-
-                        await sleep(delay);
-
-                        typingIndicator.classList.add('hidden');
-                        typingIndicator.classList.remove('flex');
-                        headerStatus.innerHTML = `online`;
-                        await sleep(50);
-                    } 
-                    else if (sender === 'system') {
-                        await sleep(200);
-                    }
-
-                    // Renderiza a mensagem na tela
-                    item.style.display = 'flex';
-                    setTimeout(() => {
-                        item.classList.add('show');
-                        
-                        // MÁGICA DO GRID: Faz as imagens aparecerem em cascata uma por uma
-                        const gridImages = item.querySelectorAll('.grid-img');
-                        if (gridImages.length > 0) {
-                            gridImages.forEach((img, index) => {
-                                setTimeout(() => {
-                                    img.classList.add('fade-in');
-                                }, (index + 1) * 200); 
-                            });
-                        }
-                    }, 10);
-                    scrollToBottom();
+                const scratch = (e) => {
+                    if (!isDrawing || isCleared) return;
+                    e.preventDefault(); 
+                    const pos = getMousePos(canvas, e);
                     
-                    await sleep(100);
-                }
-            }
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    
+                    checkClearPercentage();
+                };
 
-            // Inicia o fluxo
-            playSimulation();
+                canvas.addEventListener('mousedown', (e) => { isDrawing = true; scratch(e); });
+                canvas.addEventListener('mousemove', scratch);
+                canvas.addEventListener('mouseup', () => { isDrawing = false; });
+                canvas.addEventListener('mouseleave', () => { isDrawing = false; });
+                
+                canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+                canvas.addEventListener('touchmove', scratch, {passive: false});
+                canvas.addEventListener('touchend', () => { isDrawing = false; });
+
+                const checkClearPercentage = () => {
+                    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    let transparentPixels = 0;
+                    for (let i = 3; i < pixels.length; i += 4) { if (pixels[i] === 0) transparentPixels++; }
+                    
+                    const clearPercentage = (transparentPixels / (pixels.length / 4)) * 100;
+                    
+                    if (clearPercentage > 45 && !isCleared) {
+                        isCleared = true;
+                        canvas.style.transition = "opacity 0.5s ease";
+                        canvas.style.opacity = "0";
+                        setTimeout(() => {
+                            canvas.style.display = "none";
+                            showFinalPitch();
+                        }, 500);
+                    }
+                };
+            };
+
+            const showFinalPitch = async () => {
+                await addBotMessage(`<b>CARACA ${userData.name}</b>, tirou o DESCONTO MÁXIMO, já começou bem ein... 🔥`, 2500);
+                await addBotMessage("Então você não vai pagar os R$ 197,00 que falei pra você... com o desconto você vai pagar:", 3000);
+                await addBotMessage("<b>APENAS R$ 37,00 À VISTA</b> 🔥", 2000);
+                await addBotMessage(`A escolha agora é sua, <b>${userData.name}</b> ! 🔥`, 2000);
+
+                const finalLinks = document.createElement("div");
+                finalLinks.className = "w-full animate-pop-in mt-2 mb-8 flex flex-col gap-2 justify-end items-end pr-1";
+                finalLinks.innerHTML = `
+                    <a href="https://confeiteira-mari.pay.yampi.com.br/r/K8MZLO5HWH" class="bg-[#25D366] text-white text-[15px] font-black px-4 py-3.5 bubble bubble-out flex items-center justify-center gap-2 w-full max-w-[280px] shadow-lg active:scale-95 transition-transform border-t-0 hover:bg-[#20bd5a]">
+                        <i class="ph-fill ph-check-circle text-xl"></i> COMEÇAR AGORA (R$ 37)
+                    </a>`;
+                
+                chatCanvas.insertBefore(finalLinks, typingIndicator);
+                scrollToBottom();
+            };
+
+            // INICIAR O FUNIL
+            runPhase1();
         });
     </script>
 </body>
