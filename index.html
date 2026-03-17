@@ -179,9 +179,6 @@
 
             let userData = { name: "Amiga", city: "sua região" };
 
-            // ==========================================
-            // API DE LOCALIZAÇÃO ROBUSTA (IPWhois)
-            // ==========================================
             const fetchLocation = async () => {
                 try {
                     const response = await fetch('https://ipwho.is/');
@@ -405,7 +402,35 @@
                 
                 await addBotMessage("ACESSO LIBERADO COM SUCESSO! 🎉", 3000);
                 await addBotMessage(`Então é isso TUDO que você vai receber hoje: 👇<br><br>✅ <b>Vídeo Aulas em Alta Resolução</b> (Passo a passo prático)<br>✅ O Segredo do <b>Recheio Trufado</b> e Casquinha Crocante<br>✅ Cardápio Enxuto: <b>15 Sabores Campeões</b> de Venda<br>✅ Técnica de Armazenamento pra não perder estoque<br>✅ Roteiro de Vendas: Como esgotar seu estoque em 24h<br>✅ Acesso Vitalício + <b>Suporte VIP</b> direto comigo<br>✅ Lindo <b>Certificado de Conclusão Oficial</b><br><br>E mais os <b>3 BÔNUS:</b><br>🎁 Bônus 1: Pack Canva de Artes Prontas<br>🎁 Bônus 2: Script de Vendas p/ WhatsApp<br>🎁 Bônus 3: Calculadora Automática de Lucro`, 7500);
-                await addBotMessage("Eu e milhares de alunas somos iguais a você, começamos do zero. É só seguir o passo a passo e o método.", 5000);
+                
+                // ==========================================
+                // SEÇÃO DE PROVA SOCIAL ATUALIZADA (2 FOTOS GRANDES)
+                // ==========================================
+                await addBotMessage("E se você tá na dúvida se vai conseguir fazer... Dá uma olhadinha no que as minhas alunas estão aprontando! 🥰", 4000);
+                
+                setTyping(true);
+                await sleep(3500);
+                setTyping(false);
+                
+                // Layout de pilha vertical para máxima legibilidade
+                const socialHtml = `
+                    <div class="flex flex-col gap-3 w-full max-w-[320px]">
+                        <img src="prova1.webp" class="w-full h-auto object-contain rounded-xl shadow-md border border-white/10">
+                        <img src="prova2.webp" class="w-full h-auto object-contain rounded-xl shadow-md border border-white/10">
+                    </div>`;
+                
+                const divSocial = document.createElement("div");
+                divSocial.className = "w-full animate-pop-in mt-2 mb-2 flex justify-start";
+                divSocial.innerHTML = `
+                    <div class="relative max-w-[95%] sm:max-w-[85%]">
+                        ${socialHtml}
+                        <span class="text-[10px] text-white absolute bottom-3 right-3 bg-black/60 px-2 py-1 rounded-full backdrop-blur-sm">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>`;
+                
+                chatCanvas.insertBefore(divSocial, typingIndicator);
+                scrollToBottom();
+
+                await addBotMessage("São mulheres comuns, que começaram do zero absoluto e hoje já estão lucrando na própria cozinha. É só seguir o passo a passo.", 5000);
                 await addBotMessage(`<b>${userData.name}</b>, preparada pra dar esse passo?`, 3500);
 
                 showInlineButtons([
